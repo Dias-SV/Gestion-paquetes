@@ -31,7 +31,6 @@ typedef struct Nodo {
     struct Nodo *siguiente;
 }Nodo; 
 
-Paquete* nuevoPaquete(int id, int peso);
 //Cola
 int enqueue(int id, int peso);
 Paquete dequeue();
@@ -52,5 +51,5 @@ int isFullPila();
 int isEmptyPila();
 void mostrar();
 //Asignacion
-void asignarPaquete(Nodo *cabeza, Nodo *ultimo);
+void asignarPaquete(Nodo *cabeza, Nodo *ultimo, int valor);
 #endif

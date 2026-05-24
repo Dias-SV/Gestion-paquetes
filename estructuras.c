@@ -4,19 +4,7 @@
 
 Cola cola;
 Camion camion;
-Pila pila;
-
-Paquete* nuevoPaquete(int id, int peso) //En apuntadores para no necesitar un arreglo
-{
-    Paquete *nuevo = malloc(sizeof(Paquete));
-    if (nuevo == NULL)
-    {
-        return NULL;
-    }
-    nuevo->id = id;
-    nuevo->peso = peso;
-    return nuevo;
-}
+Pila pila = {.tope = -1};
 
 //Operaciones para cola
 int enqueue (int id, int peso)
@@ -25,15 +13,8 @@ int enqueue (int id, int peso)
     {
         return 1;
     }
-
-    Paquete *nuevo = nuevoPaquete(id, peso);
-    if(nuevo == NULL) //Verficacion
-    {
-        printf("Error de memoria\n");
-        return 1;
-    }
-
-    cola.paquete[cola.final] = *nuevo;
+    cola.paquete[cola.final].id = id;
+    cola.paquete[cola.final].peso = peso;
     cola.final = (cola.final + 1) % MAX;
     cola.size++;
     return 0;
@@ -78,7 +59,7 @@ void peek()
 {
     if (isEmptyCola() == 0)
     {
-        printf("%d", cola.paquete[cola.final]);
+        printf("%d", cola.paquete[cola.final].id);
     }
 }
 
@@ -322,24 +303,56 @@ void mostrar()
     printf("Estado de la pila:\n");
     for (int i = pila.tope; i >= 0; i--)
     {
-        printf("%d\n", pila.paquete[i]);
+        printf("ID: %d Peso: %d\n", pila.paquete[i].id, pila.paquete[i].peso);
     }
-    printf("\n\n\n");
+    printf("\n");
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza, Nodo *ultimo)
+void asignarPaquete(Nodo *cabeza, Nodo *ultimo, int valor)
 {
     if (isEmptyCola() == 1)
     {
         return;
     }
-    
-    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.frente < (cabeza->camion.capacidad - cabeza->camion.carga))
-    {
-        dequeue();
 
+    //Para recorrer
+    Nodo *temp = cabeza;
+    Nodo *antes;
+    int exito = 0;
+    do
+    {
+        if(temp->camion.id == valor)
+        {
+            exito = 1;
+            break;
+        }
+        antes = temp;
+        temp = temp->siguiente;
+    } while (temp != cabeza);
+    
+    if (exito == 0)
+    {
+        printf("No se encontro el camion con ID: %d\n", valor);
+        return;
+    }
+    if (cabeza == NULL) //Sin esto crashea
+    {
+        printf("La lista esta vacia\n");
+        return;
     }
     
-    cola.frente;
+    if (temp->camion.capacidad > temp->camion.carga && cola.paquete[cola.frente].peso < (temp->camion.capacidad - temp->camion.carga))
+    {
+        if (push(dequeue()) == 1)
+        {
+            return;
+        }
+        temp->camion.carga = pila.paquete[pila.tope].peso + temp->camion.carga;
+        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", pila.paquete[pila.tope].id, temp->camion.id);
+        return;
+    }
+    
+    printf("Paquete con ID: %d NO se agrego al camion con ID: %d porque excede el peso.\nPeso paquete: %dkg. Espacio restante en el camion %d.\n"
+    , cola.paquete[cola.frente].id, temp->camion.id, pila.paquete[pila.tope].peso, temp->camion.capacidad - temp->camion.carga);
 }

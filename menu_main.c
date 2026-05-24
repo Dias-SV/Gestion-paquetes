@@ -11,12 +11,9 @@ int main()
     
     Camion camionChico, camionMedio, camionGrande;
     camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
+    camionChico.carga = 0, camionMedio.carga = 0, camionGrande.carga = 0;
     camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
 
-    Cola cola;
-    cola.size = 0, cola.frente = 0, cola.final = 0;
-    Pila pila;
-    pila.tope = -1;
     Nodo *cabeza = NULL;
     Nodo *ultimo = NULL;
     insertarInicio(&cabeza, &ultimo, camionChico);
@@ -56,16 +53,18 @@ int main()
         break;
     
     case 3:
-        printf("A que camion quieres asignarlos: ");
+        printf("A que camion quieres asignar el paquete al frente de la cola: ");
         scanf("%d", &opcionE);
-
+        asignarPaquete(cabeza, ultimo, opcionE);
+        mostrar();
+        printQueue();
         break;
         
     case 4:
         break;
     
     case 5:
-        push(dequeue());
+        pop();
         break;
 
     case 6:
