@@ -6,7 +6,7 @@ int confirmacion();
 
 int main()
 {
-    int opcionM=0, opcionE=0, cantidad=0; //Opciones del menu
+    int opcionM=0, id=0, cantidad=0, opcionE=0;//opciones del menu
     char texto[100];//Nombre de paquete
     
     Camion camionChico, camionMedio, camionGrande;
@@ -42,12 +42,29 @@ int main()
     switch (opcionM)
     {
     case 1:
-        printf("ID del paquete: ");
-        scanf("%d", &opcionE);
-        printf("Peso del paquete: ");
-        scanf("%d", &cantidad);
-        enqueue(opcionE, cantidad);
-        printQueue();
+        do //Submenu de confirmacion de opcion
+        {
+            opcionE = confirmacion(); //Se valida el caracter para el proceso
+            switch (opcionE)
+            {
+            case 0:
+                printf("ID del paquete: ");
+                scanf("%d", &id);
+                printf("Peso del paquete: ");
+                scanf("%d", &cantidad);
+                enqueue(id, cantidad);
+                printQueue();
+                break;
+        
+            case 1:
+                printf("\nCerrando submenu.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+        } while (opcionE != 1);
         break;
 
     case 2:
@@ -56,17 +73,17 @@ int main()
     case 3:
         Camion camion;
         printf("\nID del camion: ");
-        scanf("%d", &opcionE);
+        scanf("%d", &id);
         printf("\nCapacidad de carga en kg: ");
         scanf("%d", &cantidad);
-        camion.id = opcionE, camion.capacidad = cantidad;
+        camion.id = id, camion.capacidad = cantidad;
         insertarFinal(&cabeza, &ultimo, camion);
         break;
     
     case 4:
         printf("A que camion quieres asignar el paquete al frente de la cola: ");
-        scanf("%d", &opcionE);
-        asignarPaquete(cabeza, ultimo, opcionE);
+        scanf("%d", &id);
+        asignarPaquete(cabeza, ultimo, id);
         mostrar();
         printQueue();
         break;
@@ -90,9 +107,9 @@ int main()
         scanf("%d", &cantidad);
         getchar();
         printf("\nEn que turno lo va a pone: ");
-        scanf("%d", &opcionE);
+        scanf("%d", &id);
         getchar();
-        rotar(&cabeza, &ultimo, cantidad, opcionE);
+        rotar(&cabeza, &ultimo, cantidad, id);
         printf("Turno actual de los camiones:\n");
         recorrer(cabeza);
         break;
