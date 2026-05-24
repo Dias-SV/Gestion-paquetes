@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "cola_pila.h"
+#include "estructuras.h"
 
 int confirmacion();
 
@@ -10,28 +10,34 @@ int main()
     char texto[100];//Nombre de paquete
     
     Camion camionChico, camionMedio, camionGrande;
-    camionChico.carga = 100;
-    camionMedio.carga = 500;
-    camionGrande.carga = 1000;
+    camionChico.carga = 100, camionMedio.carga = 500, camionGrande.carga = 1000;
+    camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
 
     Cola cola;
     cola.size = 0, cola.frente = 0, cola.final = 0;
+    Nodo *cabeza = NULL;
+    Nodo *ultimo = NULL;
+    insertarInicio(&cabeza, &ultimo, camionChico);
+    insertarInicio(&cabeza, &ultimo, camionMedio);
+    insertarInicio(&cabeza, &ultimo, camionGrande);
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
     {
         printf("\n---------Menu---------\n");
         printf("1. Nuevo paquete\n");
-        printf("2. Asignar paquetes\n");
-        printf("3. Registar entregas\n");
-        printf("4. Deshacer ultima asignacion\n");
-        printf("5. Reporte de estado\n");
-        printf("6. Rotar turno de camiones\n");
-        printf("7. Salir\n");
+        printf("2. Cargar paquetes desde un archivo\n");
+        printf("3. Asignar paquetes\n");
+        printf("4. Registar entregas\n");
+        printf("5. Deshacer ultima asignacion\n");
+        printf("6. Reporte de estado\n");
+        printf("7. Rotar turno de camiones\n");
+        printf("8. Salir\n");
         printf("Opcion: ");
 
         scanf("%d", &opcionM);
         getchar();
+        printf("\n");
 
     switch (opcionM)
     {
@@ -48,6 +54,9 @@ int main()
         break;
     
     case 3:
+        printf("A que camion quieres asignarlos: ");
+        scanf("%d", &opcionE);
+
         break;
         
     case 4:
@@ -60,6 +69,21 @@ int main()
         break;
     
     case 7:
+        printf("Turno actual de los camiones:\n");
+        recorrer(cabeza);
+        printf("Que camion quiere rotar? ");
+        scanf("%d", &cantidad);
+        getchar();
+        printf("En que turno lo va a poner\n");
+        printf("Matutino = 1, Vespertino = 2, Nocturno = 3\n");
+        printf("Opcion: ");
+        scanf("%d", &opcionE);
+        getchar();
+        rotar(&cabeza, &ultimo, cantidad, opcionE);
+        recorrer(cabeza);
+        break;
+        
+    case 8:
         printf("Saliendo del programa.\n");
         break;
 
@@ -67,8 +91,9 @@ int main()
         printf("Opcion invalida.\n");
         break;
     }
-    } while (opcionM != 7); //Termina el programa
+    } while (opcionM != 8); //Termina el programa
 
+    liberar(cabeza, ultimo);
     return 0;
 }
 
