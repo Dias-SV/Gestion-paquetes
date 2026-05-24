@@ -16,9 +16,9 @@ int main()
 
     Nodo *cabeza = NULL;
     Nodo *ultimo = NULL;
-    insertarInicio(&cabeza, &ultimo, camionChico);
-    insertarInicio(&cabeza, &ultimo, camionMedio);
-    insertarInicio(&cabeza, &ultimo, camionGrande);
+    insertarFinal(&cabeza, &ultimo, camionChico);
+    insertarFinal(&cabeza, &ultimo, camionMedio);
+    insertarFinal(&cabeza, &ultimo, camionGrande);
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
@@ -26,12 +26,13 @@ int main()
         printf("\n---------Menu---------\n");
         printf("1. Nuevo paquete\n");
         printf("2. Cargar paquetes desde un archivo\n");
-        printf("3. Asignar paquetes\n");
-        printf("4. Registar entregas\n");
-        printf("5. Deshacer ultima asignacion\n");
-        printf("6. Reporte de estado\n");
-        printf("7. Rotar turno de camiones\n");
-        printf("8. Salir\n");
+        printf("3. Registrar llegada de camion\n");
+        printf("4. Asignar paquetes\n");
+        printf("5. Registar entregas\n");
+        printf("6. Deshacer ultima asignacion\n");
+        printf("7. Reporte de estado\n");
+        printf("8. Rotar turno de camiones\n");
+        printf("9. Salir\n");
         printf("Opcion: ");
 
         scanf("%d", &opcionM);
@@ -51,8 +52,18 @@ int main()
 
     case 2:
         break;
-    
+        
     case 3:
+        Camion camion;
+        printf("\nID del camion: ");
+        scanf("%d", &opcionE);
+        printf("\nCapacidad de carga en kg: ");
+        scanf("%d", &cantidad);
+        camion.id = opcionE, camion.capacidad = cantidad;
+        insertarFinal(&cabeza, &ultimo, camion);
+        break;
+    
+    case 4:
         printf("A que camion quieres asignar el paquete al frente de la cola: ");
         scanf("%d", &opcionE);
         asignarPaquete(cabeza, ultimo, opcionE);
@@ -60,27 +71,25 @@ int main()
         printQueue();
         break;
         
-    case 4:
+    case 5:
         break;
     
-    case 5:
+    case 6:
         pop();
         break;
 
-    case 6:
+    case 7:
         printQueue();
         mostrar();
         break;
     
-    case 7:
+    case 8:
         printf("Turno actual de los camiones:\n");
         recorrer(cabeza);
         printf("Que camion quiere rotar? ");
         scanf("%d", &cantidad);
         getchar();
-        printf("En que turno lo va a poner\n");
-        printf("Matutino = 1, Vespertino = 2, Nocturno = 3\n");
-        printf("Opcion: ");
+        printf("\nEn que turno lo va a pone: ");
         scanf("%d", &opcionE);
         getchar();
         rotar(&cabeza, &ultimo, cantidad, opcionE);
@@ -88,7 +97,7 @@ int main()
         recorrer(cabeza);
         break;
         
-    case 8:
+    case 9:
         printf("Saliendo del programa.\n");
         break;
 
@@ -96,7 +105,7 @@ int main()
         printf("Opcion invalida.\n");
         break;
     }
-    } while (opcionM != 8); //Termina el programa
+    } while (opcionM != 9); //Termina el programa
 
     liberar(cabeza, ultimo);
     return 0;

@@ -39,7 +39,7 @@ int isEmptyCola();
 void peek();
 void printQueue();
 //Lista
-void insertarInicio(Nodo **cabeza, Nodo **ultimo, Camion camion);
+void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion camion);
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
 void recorrer(Nodo *cabeza);
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor);

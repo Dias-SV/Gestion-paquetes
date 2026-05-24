@@ -5,6 +5,9 @@
 Cola cola;
 Camion camion;
 Pila pila = {.tope = -1};
+//Camiones fuera
+Nodo *cabezaF = NULL;
+Nodo *ultimoF = NULL;
 
 //Operaciones para cola
 int enqueue (int id, int peso)
@@ -82,7 +85,7 @@ void printQueue()
 }
 
 //Operaciones lista circular
-void insertarInicio(Nodo **cabeza, Nodo **ultimo, Camion camion) //Creo que esto no lo necesito
+void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion camion)
 {
     Nodo *nuevo = malloc(sizeof(Nodo));
     nuevo->camion = camion;
@@ -95,17 +98,36 @@ void insertarInicio(Nodo **cabeza, Nodo **ultimo, Camion camion) //Creo que esto
     {
         nuevo->siguiente = *cabeza;
     }
-    *cabeza = nuevo;
-    (*ultimo)->siguiente = *cabeza;
 
-    
+    (*ultimo)->siguiente = nuevo;
+    *ultimo = nuevo;   
 }
 
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
 {
+    if (*cabeza == NULL)
+    {
+        printf("La lista esta vacia\n");
+        return;
+    }
+
+    int cantidad = 0;
     Nodo *temp = *cabeza;
-    Nodo *antes;
+    do //Para saber cuantos camiones hay
+    {
+        cantidad++;
+        temp = temp->siguiente;
+    } while (temp != *cabeza);
+    if (turno < 1 || turno > cantidad)
+    {
+        printf("Turno invalido. Debe ser entre 1 y %d\n", cantidad);
+        return;
+    }
+    
+    temp = *cabeza; //Reinicio por si las dudas
+    Nodo *antes = *ultimo; //Pongo en ultimo por si se rompe el oop de una
     int exito = 0;
+    int posicion = 1; //Para saber en que turno esta el camion
     do
     {
         if(temp->camion.id == id)
@@ -115,59 +137,54 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
         }
         antes = temp;
         temp = temp->siguiente;
+        posicion++;
     } while (temp != *cabeza);
     
     if (exito == 0)
     {
-        printf("No se encontro el camion\n");
+        printf("No se encontro el camion con ID: %d\n", id);
         return;
     }
-
-    switch (turno) //Todo esto depende de que solo sean 3 turnos y 3 camiones, agrega mas y se va a la mierda
+    if (posicion == turno)
     {
-    case 1: //Matutino, turno 1
-        if (temp == *cabeza)
-        {
-            printf("El camion ya se encuentra en el turno matutino\n");
-        }
-        else
-        {
-            *cabeza = temp; //Solo hago que sea el primero
-            *ultimo = antes; //Para manterner la circularidad correctamente
-            printf("El camion con ID: %d ahora esta en el turno matutino\n", temp->camion.id);
-        }
-        break;
-
-    case 2: //Vespertino, turno 2
-        if (temp != *cabeza && temp != *ultimo )
-        {
-            printf("El camion ya se encuentra en el turno vespertino\n");
-        }
-        else
-        {
-            *cabeza = antes; //Creo que esto no lo necesito explicar
-            *ultimo = temp->siguiente;
-            printf("El camion con ID: %d ahora esta en el turno vespertinoo\n", temp->camion.id);
-        }
-        break;
-
-    case 3: //Nocturno, turno 3
-        if (temp == *ultimo)
-        {
-            printf("El camion ya se encuentra en el turno nocturno\n");
-        }
-        else
-        {
-            *ultimo = temp;
-            *cabeza = temp->siguiente;
-            printf("El camion con ID: %d ahora esta en el turno nocturno\n", temp->camion.id);
-        }
-        break;
-    
-    default:
-        break;
+        printf("El camion con ID: %d ya se encuentra en el turno %d\n", id, turno);
+        return;
     }
     
+    antes->siguiente = temp->siguiente; //Para desligarlo de la lista
+    if (temp == *cabeza) //Para camion al inicio
+    {
+        *cabeza = temp->siguiente;
+    }
+    if (temp == *ultimo) //Para camion al final
+    {
+        *ultimo = antes;
+    }
+
+    if (turno == 1) //Para inicio
+    {
+        temp->siguiente = *cabeza;
+        *cabeza = temp;
+        (*ultimo)->siguiente = *cabeza;
+    }
+    else if (turno == cantidad)  //Para final
+    {
+        temp->siguiente = *cabeza;
+        (*ultimo)->siguiente = temp;
+        *ultimo = temp; 
+    }
+    else //Para uno en medio
+    {
+        Nodo *temp2 = *cabeza; //Para recorrer la nueva lista
+        for (int i = 1; i < turno-1 ; i++)
+        {
+            temp2 = temp2->siguiente;
+        }
+        temp->siguiente = temp2->siguiente;
+        temp2->siguiente = temp;
+    }
+
+    printf("Camion con ID: %d movido al turno %d\n", id, turno);
 }
 
 void recorrer(Nodo *cabeza) //Solo para checar
