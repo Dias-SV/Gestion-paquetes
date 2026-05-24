@@ -1,10 +1,11 @@
 #ifndef estructuras_h
 #define estructuras_h
 
-#define MAX 50
+#define MAX 5
 //No se que PUTAS estoy haciendo
 typedef struct Camion{
     int id;
+    int capacidad;
     int carga;
 }Camion; 
 
@@ -14,23 +15,28 @@ typedef struct Paquete{
 } Paquete;
 
 typedef struct Cola{
-    struct Paquete paquete[MAX];
+    Paquete paquete[MAX];
     int frente;
     int final;
     int size;
 } Cola;
 
+typedef struct Pila{
+    Paquete paquete[MAX];
+    int tope;
+} Pila;
+
 typedef struct Nodo {
-    struct Camion camion;
+    Camion camion;
     struct Nodo *siguiente;
 }Nodo; 
 
 Paquete* nuevoPaquete(int id, int peso);
 //Cola
 int enqueue(int id, int peso);
-int dequeue();
-int isFull();
-int isEmpty();
+Paquete dequeue();
+int isFullCola();
+int isEmptyCola();
 void peek();
 void printQueue();
 //Lista
@@ -39,5 +45,12 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
 void recorrer(Nodo *cabeza);
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor);
 void liberar(Nodo *cabeza, Nodo *ultimo);
-
+//Pila
+int push(Paquete paquete);
+int pop();
+int isFullPila();
+int isEmptyPila();
+void mostrar();
+//Asignacion
+void asignarPaquete(Nodo *cabeza, Nodo *ultimo);
 #endif

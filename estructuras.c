@@ -4,6 +4,7 @@
 
 Cola cola;
 Camion camion;
+Pila pila;
 
 Paquete* nuevoPaquete(int id, int peso) //En apuntadores para no necesitar un arreglo
 {
@@ -12,7 +13,7 @@ Paquete* nuevoPaquete(int id, int peso) //En apuntadores para no necesitar un ar
     {
         return NULL;
     }
-    nuevo->id = 
+    nuevo->id = id;
     nuevo->peso = peso;
     return nuevo;
 }
@@ -20,7 +21,7 @@ Paquete* nuevoPaquete(int id, int peso) //En apuntadores para no necesitar un ar
 //Operaciones para cola
 int enqueue (int id, int peso)
 {
-    if (isFull() == 1)
+    if (isFullCola() == 1)
     {
         return 1;
     }
@@ -39,19 +40,21 @@ int enqueue (int id, int peso)
     
 }
 
-int dequeue()
+Paquete dequeue() //Regreso un paquete para poder guardarlo en otras estructuras
 {
-    if (isEmpty() == 1)
+    Paquete temp = {-1}; //Para que no haya problema con otros paquetes
+    if (isEmptyCola() == 1)
     {
-        return 1;
+        return temp;
     }
 
+    temp = cola.paquete[cola.frente];
     cola.frente = (cola.frente + 1) % MAX;
     cola.size--;
-    return 0;
+    return temp;
 }
 
-int isFull()
+int isFullCola()
 {
     if (cola.size == MAX)
     {
@@ -61,7 +64,7 @@ int isFull()
     return 0;
 }
 
-int isEmpty()
+int isEmptyCola()
 {
     if (cola.size == 0)
     {
@@ -73,7 +76,7 @@ int isEmpty()
 
 void peek()
 {
-    if (isEmpty() == 0)
+    if (isEmptyCola() == 0)
     {
         printf("%d", cola.paquete[cola.final]);
     }
@@ -82,7 +85,7 @@ void peek()
 void printQueue()
 {
     int i = cola.frente;
-    if (isEmpty() == 1)
+    if (isEmptyCola() == 1)
     {
         return;
     }
@@ -186,7 +189,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     
 }
 
-void recorrer(Nodo *cabeza)
+void recorrer(Nodo *cabeza) //Solo para checar
 {
     if (cabeza == NULL) //Sin esto crashea
     {
@@ -203,8 +206,6 @@ void recorrer(Nodo *cabeza)
     } while (temp != cabeza);
     printf("\n");
 }
-
-//Puse ultimo porque si se elimina la cabeza se pierde la circularidad
 
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
 {
@@ -270,4 +271,75 @@ void liberar(Nodo *cabeza, Nodo *ultimo)
         free(temp);
     }
     printf("Memoria liberada correctamente");
+}
+
+//Operaciones pila
+int push(Paquete paquete)
+{
+    if (isFullPila() == 1)
+    {
+        return 1;
+    }
+    
+    pila.tope++;
+    pila.paquete[pila.tope] = paquete;
+    return 0;
+}
+
+int pop()
+{
+    if (isEmptyPila() == 1)
+    {
+        return 1;
+    }
+
+    pila.tope--;
+    return 0;
+}
+
+int isFullPila()
+{
+    if (pila.tope >= MAX-1)
+    {
+        printf("\nLa pila esta llena\n");
+        return 1;
+    }
+    return 0;
+}
+
+int isEmptyPila()
+{
+    if (pila.tope <= -1)
+    {
+        printf("\nLa pila esta vacia\n");
+        return 1;
+    }
+    return 0;
+}
+
+void mostrar()
+{
+    printf("Estado de la pila:\n");
+    for (int i = pila.tope; i >= 0; i--)
+    {
+        printf("%d\n", pila.paquete[i]);
+    }
+    printf("\n\n\n");
+}
+
+//Asignar paquetes
+void asignarPaquete(Nodo *cabeza, Nodo *ultimo)
+{
+    if (isEmptyCola() == 1)
+    {
+        return;
+    }
+    
+    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.frente < (cabeza->camion.capacidad - cabeza->camion.carga))
+    {
+        dequeue();
+
+    }
+    
+    cola.frente;
 }

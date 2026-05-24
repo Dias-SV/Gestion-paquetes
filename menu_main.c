@@ -10,11 +10,13 @@ int main()
     char texto[100];//Nombre de paquete
     
     Camion camionChico, camionMedio, camionGrande;
-    camionChico.carga = 100, camionMedio.carga = 500, camionGrande.carga = 1000;
+    camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
     camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
 
     Cola cola;
     cola.size = 0, cola.frente = 0, cola.final = 0;
+    Pila pila;
+    pila.tope = -1;
     Nodo *cabeza = NULL;
     Nodo *ultimo = NULL;
     insertarInicio(&cabeza, &ultimo, camionChico);
@@ -63,9 +65,12 @@ int main()
         break;
     
     case 5:
+        push(dequeue());
         break;
 
     case 6:
+        printQueue();
+        mostrar();
         break;
     
     case 7:
@@ -80,6 +85,7 @@ int main()
         scanf("%d", &opcionE);
         getchar();
         rotar(&cabeza, &ultimo, cantidad, opcionE);
+        printf("Turno actual de los camiones:\n");
         recorrer(cabeza);
         break;
         
