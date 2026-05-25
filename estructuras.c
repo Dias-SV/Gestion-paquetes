@@ -4,10 +4,6 @@
 
 Cola cola;
 Camion camion;
-Pila pila = {.tope = -1};
-//Camiones fuera
-Nodo *cabezaF = NULL;
-Nodo *ultimoF = NULL;
 
 //Operaciones para cola
 int enqueue (int id, int peso)
@@ -85,10 +81,14 @@ void printQueue()
 }
 
 //Operaciones lista circular
-void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion camion)
+void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
 {
     Nodo *nuevo = malloc(sizeof(Nodo));
-    nuevo->camion = camion;
+    if (nuevo == NULL) {
+        printf("Error: No se pudo asignar memoria.\n");
+        return;
+    }
+    nuevo->camion = *camion;
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
         nuevo->siguiente = nuevo;
@@ -118,6 +118,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
         cantidad++;
         temp = temp->siguiente;
     } while (temp != *cabeza);
+
     if (turno < 1 || turno > cantidad)
     {
         printf("Turno invalido. Debe ser entre 1 y %d\n", cantidad);
@@ -191,22 +192,60 @@ void recorrer(Nodo *cabeza) //Solo para checar
 {
     if (cabeza == NULL) //Sin esto crashea
     {
-        printf("La lista se vacio\n");
+        printf("No hay camiones\n");
         return;
     }
     
     Nodo *temp = cabeza;
-    printf("ID: ");
+    printf("\n----- Camiones -----\n");
     do
     {
-        printf("%d -> ", temp->camion.id);
+        printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
+        temp->camion.id, temp->camion.capacidad, temp->camion.carga, temp->camion.capacidad - temp->camion.carga);
+
         temp = temp->siguiente;
     } while (temp != cabeza);
     printf("\n");
 }
 
+int buscar(Nodo *cabeza, int id) 
+{
+    if (cabeza == NULL) //Sin esto crashea
+    {
+        printf("No hay camiones\n");
+        return 0;
+    }
+    
+    int exito = 0;
+    int posicion = 1;
+    Nodo *temp = cabeza;
+    Nodo *antes;
+    do
+    {
+        if(temp->camion.id == id)
+        {
+            exito = 1;
+            break;
+        }
+        antes = temp;
+        temp = temp->siguiente;
+        posicion++;
+    } while (temp != cabeza);
+    if (exito == 0)
+    {
+        printf("No se encontro el camion con ID: %d\n", id);
+        return 0;
+    }
+    return posicion;
+}
+
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
 {
+    if(*cabeza == NULL)
+    {
+        printf("No hay camiones\n");
+        return;
+    }
     Nodo *temp = *cabeza;
     Nodo *antes;
     int exito = 0;
@@ -223,7 +262,7 @@ void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
     
     if (exito == 0)
     {
-        printf("No se encontro el valor\n");
+        printf("No se encontro el camion\n");
         return;
     }
 
@@ -272,32 +311,33 @@ void liberar(Nodo *cabeza, Nodo *ultimo)
 }
 
 //Operaciones pila
-int push(Paquete paquete)
+int push(Pila *pila, Paquete paquete)
 {
-    if (isFullPila() == 1)
+    if (isFullPila(pila) == 1)
     {
         return 1;
     }
     
-    pila.tope++;
-    pila.paquete[pila.tope] = paquete;
+    pila->tope++;
+    pila->paquete[pila->tope] = paquete;
     return 0;
 }
 
-int pop()
+Paquete pop(Pila *pila)
 {
-    if (isEmptyPila() == 1)
+    if (isEmptyPila(pila) == 1)
     {
-        return 1;
+        Paquete vacio = {-1, -1};
+        return vacio;
     }
 
-    pila.tope--;
-    return 0;
+    pila->tope--;
+    return pila->paquete[pila->tope + 1];
 }
 
-int isFullPila()
+int isFullPila(Pila *pila)
 {
-    if (pila.tope >= MAX-1)
+    if (pila->tope >= MAX-1)
     {
         printf("\nLa pila esta llena\n");
         return 1;
@@ -305,9 +345,9 @@ int isFullPila()
     return 0;
 }
 
-int isEmptyPila()
+int isEmptyPila(Pila *pila)
 {
-    if (pila.tope <= -1)
+    if (pila->tope <= -1)
     {
         printf("\nLa pila esta vacia\n");
         return 1;
@@ -315,21 +355,28 @@ int isEmptyPila()
     return 0;
 }
 
-void mostrar()
+void mostrar(Pila *pila)
 {
     printf("Estado de la pila:\n");
-    for (int i = pila.tope; i >= 0; i--)
+    for (int i = pila->tope; i >= 0; i--)
     {
-        printf("ID: %d Peso: %d\n", pila.paquete[i].id, pila.paquete[i].peso);
+        printf("ID: %d | Peso: %d\n", pila->paquete[i].id, pila->paquete[i].peso);
     }
     printf("\n");
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza, Nodo *ultimo, int valor)
+void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
 {
     if (isEmptyCola() == 1)
     {
+        printf("No hay paquetes\n");
+        return;
+    }
+
+    if(cabeza == NULL)
+    {
+        printf("No hay camiones\n");
         return;
     }
 
@@ -361,15 +408,154 @@ void asignarPaquete(Nodo *cabeza, Nodo *ultimo, int valor)
     
     if (temp->camion.capacidad > temp->camion.carga && cola.paquete[cola.frente].peso < (temp->camion.capacidad - temp->camion.carga))
     {
-        if (push(dequeue()) == 1)
+        if (push(&temp->camion.pila, dequeue()) == 1)
         {
             return;
         }
-        temp->camion.carga = pila.paquete[pila.tope].peso + temp->camion.carga;
-        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", pila.paquete[pila.tope].id, temp->camion.id);
+        temp->camion.carga = pila->paquete[pila->tope].peso + temp->camion.carga;
+        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", pila->paquete[pila->tope].id, temp->camion.id);
         return;
     }
     
     printf("Paquete con ID: %d NO se agrego al camion con ID: %d porque excede el peso.\nPeso paquete: %dkg. Espacio restante en el camion %d.\n"
-    , cola.paquete[cola.frente].id, temp->camion.id, pila.paquete[pila.tope].peso, temp->camion.capacidad - temp->camion.carga);
+    , cola.paquete[cola.frente].id, temp->camion.id, pila->paquete[pila->tope].peso, temp->camion.capacidad - temp->camion.carga);
+}
+
+void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
+{
+    if(isEmptyPila(pila) == 1)
+    {
+        printf("No hay camiones\n");
+        return;
+    }
+    
+    if(cabeza == NULL)
+    {
+        printf("No hay camiones\n");
+        return;
+    }
+    
+    Nodo *temp = cabeza;
+    Nodo *antes;
+    int exito = 0;
+    do
+    {
+        if(temp->camion.id == valor)
+        {
+            exito = 1;
+            break;
+        }
+        antes = temp;
+        temp = temp->siguiente;
+    } while (temp != cabeza);
+    
+    if (exito == 0)
+    {
+        printf("No se encontro el camion con ID: %d\n", valor);
+        return;
+    }
+    if (cabeza == NULL) //Sin esto crashea
+    {
+        printf("La lista esta vacia\n");
+        return;
+    }
+
+    if(isFullPila(pila) == 1)
+    {
+        printf("La pila secundaria esta llena\n");
+        return;
+    }
+
+    push(pila, pop(&temp->camion.pila)); //Lo pongo en una pila secundaria para no perder el paquete
+    printf("Asignacion deshecha\n");
+}
+
+Camion* buscarCamion(Nodo *cabeza, int valor)
+{
+    if (cabeza == NULL) //Sin esto crashea
+    {
+        printf("No hay camiones\n");
+        Camion vacio = {-1};
+        return &vacio;
+    }
+    
+    int exito = 0;
+    Nodo *temp = cabeza;
+    do
+    {
+        if(temp->camion.id == valor)
+        {
+            exito = 1;
+            break;
+        }
+        temp = temp->siguiente;
+    } while (temp != cabeza);
+    
+    if (exito == 0)
+    {
+        printf("No se encontro el camion con ID: %d\n", valor);
+        Camion vacio = {-1};
+        return &vacio;
+    }
+    return &temp->camion;
+}
+
+void registrarEntrega(Historial **cabeza, Camion *camion)
+{
+
+    if (isEmptyPila(&(camion->pila)) == 1)
+    {
+        printf("No hay paquetes en el camion con ID: %d\n", camion->id);
+        return;
+    };
+
+    Historial *nuevo = malloc(sizeof(Historial));
+    if (nuevo == NULL) {
+        printf("Error: No se pudo asignar memoria.\n");
+        return;
+    }
+    
+    nuevo->paquete = pop(&(camion->pila)); //Saco el paquete del camion
+    camion->carga = camion->carga - nuevo->paquete.peso; //Cambio la carga del camion
+    nuevo->siguiente = NULL;
+
+    if(*cabeza == NULL)
+    {
+        *cabeza = nuevo;
+    }
+    else
+    {
+        Historial *temp = *cabeza;
+
+        while(temp->siguiente != NULL)
+        {
+            temp = temp->siguiente;
+        }
+
+        temp->siguiente = nuevo;
+    }
+
+    printf("Entrega registrada\n");
+}
+
+void mostrarHistorial(Historial *cabeza)
+{
+    if(cabeza == NULL)
+    {
+        printf("Historial vacio\n");
+        return;
+    }
+
+    printf("\n----- HISTORIAL -----\n");
+
+    while(cabeza != NULL)
+    {
+        printf("ID: %d | Peso: %dkg\n",
+        cabeza->paquete.id,
+        cabeza->paquete.peso);
+
+        cabeza = cabeza->siguiente;
+    }
+
+    printf("\n");
 }

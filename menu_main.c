@@ -5,43 +5,51 @@
 int confirmacion();
 int noLetra(const char *letras, int *numero);
 
+Pila pila = {.tope = -1}; //Pila de paquetes para meter en camion
+Pila pilaD = {.tope = -1}; //Pila de paquetes desasignados para poder volver a asignar
+//Camiones en la base
+Nodo *cabeza = NULL;
+Nodo *ultimo = NULL;
+//Camiones fuera
+Nodo *cabezaF = NULL;
+Nodo *ultimoF = NULL;
+
 int main()
 {
     int opcionM=0, id=0, cantidad=0, opcionE=0;//opciones del menu
     char texto[100];//Nombre de paquete
     
-    Camion camionChico, camionMedio, camionGrande;
+    Camion camion, camionChico, camionMedio, camionGrande;
     camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
     camionChico.carga = 0, camionMedio.carga = 0, camionGrande.carga = 0;
     camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
 
-    Nodo *cabeza = NULL;
-    Nodo *ultimo = NULL;
-    //Camiones fuera
-    Nodo *cabezaF = NULL;
-    Nodo *ultimoF = NULL;
-    insertarFinal(&cabeza, &ultimo, camionChico);
-    insertarFinal(&cabeza, &ultimo, camionMedio);
-    insertarFinal(&cabeza, &ultimo, camionGrande);
+    Historial *cabezaH = NULL;
+    insertarFinal(&cabeza, &ultimo, &camionChico);
+    insertarFinal(&cabeza, &ultimo, &camionMedio);
+    insertarFinal(&cabeza, &ultimo, &camionGrande);
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
     {
         printf("\n---------Menu---------\n");
         printf("1. Nuevo paquete\n");
-        printf("2. Cargar paquetes desde un archivo\n");
+        printf("2. Registrar nuevo camion\n");
         printf("3. Registrar llegada de camion\n");
-        printf("4. Asignar paquetes\n");
-        printf("5. Registar entregas\n");
-        printf("6. Deshacer ultima asignacion\n");
-        printf("7. Reporte de estado\n");
-        printf("8. Rotar turno de camiones\n");
-        printf("9. Salir\n");
+        printf("4. Registrar salida de camion\n");
+        printf("5. Asignar paquetes\n");
+        printf("6. Registar entregas\n");
+        printf("7. Deshacer ultima asignacion\n");
+        printf("8. Reporte de estado\n");
+        printf("9. Rotar turno de camiones\n");
+        printf("10. Salir\n");
         printf("Opcion: ");
 
         scanf("%d", &opcionM);
         getchar();
         printf("\n");
+    
+
 
     switch (opcionM)
     {
@@ -54,11 +62,11 @@ int main()
             case 0:
                 while (noLetra("ID del paquete: ", &id) == 0)//Verifica que no se pongan letras
                 {
-                    printf("Entrada invalida. Ingresa un numero entero.\n\n");
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
                 while (noLetra("Peso del paquete: ", &cantidad) == 0)//Verifica que no se pongan letras
                 {
-                    printf("Entrada invalida. Ingresa un numero entero.\n\n");
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
                 enqueue(id, cantidad);
                 printQueue();
@@ -75,41 +83,76 @@ int main()
             }
         } while (opcionE != 1);
         break;
-
+        
     case 2:
-        break;
-        
-    case 3:
-        Camion camion;
-        printf("\nID del camion: ");
-        scanf("%d", &id);
-        printf("\nCapacidad de carga en kg: ");
-        scanf("%d", &cantidad);
+        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
         camion.id = id, camion.capacidad = cantidad;
-        insertarFinal(&cabeza, &ultimo, camion);
-        break;
-    
-    case 4:
-        printf("A que camion quieres asignar el paquete al frente de la cola: ");
-        scanf("%d", &id);
-        asignarPaquete(cabeza, ultimo, id);
-        mostrar();
-        printQueue();
-        break;
-        
-    case 5:
-        break;
-    
-    case 6:
-        pop();
+        insertarFinal(&cabeza, &ultimo, &camion);
         break;
 
-    case 7:
-        printQueue();
-        mostrar();
+    case 3:
+        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        if (buscarCamion(cabeza, id) == -1)
+        {
+            break;
+        }
+        insertarFinal(&cabeza, &ultimo, buscarCamion(cabeza, id));
+        break;
+
+    case 4:
+        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        if (buscarCamion(cabeza, id) == -1)
+        {
+            break;
+        }
+        insertarFinal(&cabezaF, &ultimoF, buscarCamion(cabezaF, id));
         break;
     
+    case 5:
+        while (noLetra("A que camion quieres asignar el paquete al frente de la cola: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        asignarPaquete(cabeza, ultimo, &pila, id);
+        mostrar(&pila);
+        printQueue();
+        break;
+        
+    case 6:
+        while (noLetra("Camion que entrego el paquete: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        if (buscarCamion(cabeza, id) == -1)
+        {
+            break;
+        }
+        registrarEntrega(&cabezaH, buscarCamion(cabeza, id));
+        break;
+    
+    case 7:
+        deshacerAsignacion(cabeza, ultimo, &pila, &pilaD);
+        break;
+
     case 8:
+        printQueue();
+        mostrar(&pila);
+        break;
+    
+    case 9:
         printf("Turno actual de los camiones:\n");
         recorrer(cabeza);
         printf("Que camion quiere rotar? ");
@@ -123,7 +166,7 @@ int main()
         recorrer(cabeza);
         break;
         
-    case 9:
+    case 10:
         printf("Saliendo del programa.\n");
         break;
 
@@ -131,7 +174,7 @@ int main()
         printf("Opcion invalida.\n");
         break;
     }
-    } while (opcionM != 9); //Termina el programa
+    } while (opcionM != 10); //Termina el programa
 
     liberar(cabeza, ultimo);
     return 0;
@@ -173,7 +216,10 @@ int noLetra(const char *letras, int *numero)
     {
         return 0;
     }
-
+    if (valor < 1 || valor > 1000000) //Limite para evitar numeros muy grandes o negativos
+    {
+        return 0;
+    }
     *numero = (int)valor; //Regresa el valor que se obtuvo en la conversion
     return 1;
 }
