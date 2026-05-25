@@ -3,6 +3,7 @@
 #include "estructuras.h"
 
 int confirmacion();
+int noLetra(const char *letras, int *numero);
 
 int main()
 {
@@ -16,6 +17,9 @@ int main()
 
     Nodo *cabeza = NULL;
     Nodo *ultimo = NULL;
+    //Camiones fuera
+    Nodo *cabezaF = NULL;
+    Nodo *ultimoF = NULL;
     insertarFinal(&cabeza, &ultimo, camionChico);
     insertarFinal(&cabeza, &ultimo, camionMedio);
     insertarFinal(&cabeza, &ultimo, camionGrande);
@@ -48,12 +52,17 @@ int main()
             switch (opcionE)
             {
             case 0:
-                printf("ID del paquete: ");
-                scanf("%d", &id);
-                printf("Peso del paquete: ");
-                scanf("%d", &cantidad);
+                while (noLetra("ID del paquete: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero.\n\n");
+                }
+                while (noLetra("Peso del paquete: ", &cantidad) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero.\n\n");
+                }
                 enqueue(id, cantidad);
                 printQueue();
+                opcionE = 1; //Para no volver al loop
                 break;
         
             case 1:
@@ -148,4 +157,23 @@ int confirmacion()
     {
         return -1;//Para que al leer otros caracteres no haya errores
     }
+}
+
+int noLetra(const char *letras, int *numero)
+{
+    char buffer[20];
+    printf("%s", letras);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL) //Guarda el input como texto
+        return 0;
+
+    char *fin;
+    long valor = strtol(buffer, &fin, 10); //Trata de convertir el texto en un numero, el puntero para donde para la conversion
+
+    if (fin == buffer || (*fin != '\n' && *fin != '\0')) //Fin debe apuntar al final si no habia letras
+    {
+        return 0;
+    }
+
+    *numero = (int)valor; //Regresa el valor que se obtuvo en la conversion
+    return 1;
 }
