@@ -15,17 +15,18 @@ Nodo *ultimo = NULL;
 Nodo *cabezaF = NULL;
 Nodo *ultimoF = NULL;
 
+Historial *cabezaH = NULL;
+
 int main()
 {
-    int opcionM=0, id=0, cantidad=0, opcionE=0;//opciones del menu
-    char texto[100];//Nombre de paquete
+    int opcionM=0, id=0, cantidad=0, opcionE=0, opcionS=0;//Opciones del menu
     
     Camion camion, camionChico, camionMedio, camionGrande;
     camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
     camionChico.carga = 0, camionMedio.carga = 0, camionGrande.carga = 0;
     camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
+    camionChico.pila.tope = -1, camionMedio.pila.tope = -1, camionGrande.pila.tope = -1;
 
-    Historial *cabezaH = NULL;
     insertarFinal(&cabeza, &ultimo, &camionChico);
     insertarFinal(&cabeza, &ultimo, &camionMedio);
     insertarFinal(&cabeza, &ultimo, &camionGrande);
@@ -111,15 +112,15 @@ int main()
         break;
 
     case 4:
-        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        if (cabeza == NULL)
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        if (buscarCamion(cabeza, id) == NULL)
-        {
+            printf("No hay camiones en la base\n");
             break;
         }
-        insertarFinal(&cabezaF, &ultimoF, buscarCamion(cabeza, id));
+        printf("Se quitara el camion con ID: %d de la base\nEsta seguro? [s/n]: ", cabeza->camion.id);
+
+        insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
+        quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
         break;
     
     case 5:
@@ -190,6 +191,8 @@ int main()
     } while (opcionM != 10); //Termina el programa
 
     liberar(cabeza, ultimo);
+    liberar(cabezaF, ultimoF);
+    liberarH(cabezaH);
     return 0;
 }
 

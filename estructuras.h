@@ -43,14 +43,13 @@ int enqueue(int id, int peso);
 Paquete dequeue();
 int isFullCola();
 int isEmptyCola();
-void peek();
 void printQueue();
 
 //Lista circular
 void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion);
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
 void recorrer(Nodo *cabeza);
-void eliminar(Nodo **cabeza, Nodo **ultimo, int valor);
+void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor);
 void liberar(Nodo *cabeza, Nodo *ultimo);
 
 //Pila
@@ -68,5 +67,6 @@ void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
 Camion* buscarCamion(Nodo *cabeza, int valor);
 void registrarEntrega(Historial **cabeza, Camion *camion);
 void mostrarHistorial(Historial *cabeza);
+void liberarH(Historial *cabeza);
 
 #endif

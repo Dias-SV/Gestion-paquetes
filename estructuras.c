@@ -54,14 +54,6 @@ int isEmptyCola()
     return 0;
 }
 
-void peek()
-{
-    if (isEmptyCola() == 0)
-    {
-        printf("%d", cola.paquete[cola.final].id);
-    }
-}
-
 void printQueue()
 {
     int i = cola.frente;
@@ -92,6 +84,7 @@ void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
         nuevo->siguiente = nuevo;
+        *cabeza = nuevo;
         *ultimo = nuevo;
     }
     else
@@ -208,7 +201,7 @@ void recorrer(Nodo *cabeza) //Solo para checar
     printf("\n");
 }
 
-void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
+void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor)
 {
     if(*cabeza == NULL)
     {
@@ -220,7 +213,7 @@ void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
     int exito = 0;
     do
     {
-        if(temp->camion.carga == valor)
+        if(temp->camion.id == valor)
         {
             exito = 1;
             break;
@@ -258,7 +251,7 @@ void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
         antes->siguiente = temp->siguiente;//Para cuando esta en medio
     }
 
-    free (temp);
+    free(temp);
 }
 
 void liberar(Nodo *cabeza, Nodo *ultimo)
@@ -388,13 +381,7 @@ void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
 }
 
 void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
-{
-    if(isEmptyPila(pila) == 1)
-    {
-        printf("No hay camiones\n");
-        return;
-    }
-    
+{    
     if(cabeza == NULL)
     {
         printf("No hay camiones\n");
@@ -420,9 +407,10 @@ void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
         printf("No se encontro el camion con ID: %d\n", valor);
         return;
     }
-    if (cabeza == NULL) //Sin esto crashea
+
+    if(isEmptyPila(&temp->camion.pila) == 1)
     {
-        printf("La lista esta vacia\n");
+        printf("No hay paquetes en el camion con ID: %d\n", temp->camion.id);
         return;
     }
 
@@ -459,6 +447,7 @@ Camion* buscarCamion(Nodo *cabeza, int valor)
 
 }
 
+//Historial
 void registrarEntrega(Historial **cabeza, Camion *camion)
 {
 
@@ -517,4 +506,17 @@ void mostrarHistorial(Historial *cabeza)
     }
 
     printf("\n");
+}
+
+void liberarH(Historial *cabeza)
+{
+    Historial *temp;
+
+    while (cabeza != NULL)
+    {
+        temp = cabeza;
+        cabeza = cabeza->siguiente;
+        free(temp);
+    }
+    printf("Memoria liberada correctamente");
 }
