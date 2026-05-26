@@ -62,11 +62,10 @@ void printQueue()
         return;
     }
 
-    printf("\nEstado de la cola:\n");
+    printf("Estado de la cola:\n");
     for (int j = 0; j < cola.size; j++)
     {
-        printf("ID: %d  ", cola.paquete[i].id);
-        printf("Peso: %d\n", cola.paquete[i].peso);
+        printf("ID: %d | Peso: %d\n", cola.paquete[i].id, cola.paquete[i].peso);
         i = (i+1) % MAX;
     }
     printf("\n");
@@ -181,7 +180,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     printf("Camion con ID: %d movido al turno %d\n", id, turno);
 }
 
-void recorrer(Nodo *cabeza) //Solo para checar
+void mostrarCamiones(Nodo *cabeza, const char *mensaje)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
@@ -190,7 +189,7 @@ void recorrer(Nodo *cabeza) //Solo para checar
     }
     
     Nodo *temp = cabeza;
-    printf("\n----- Camiones -----\n");
+    printf("\n----- Camiones %s -----\n", mensaje);
     do
     {
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
@@ -319,6 +318,10 @@ int isEmptyPila(Pila *pila)
 
 void mostrar(Pila *pila)
 {
+    if (isEmptyPila(pila) == 1)
+    {
+        return;
+    }
     printf("Estado de la pila:\n");
     for (int i = pila->tope; i >= 0; i--)
     {

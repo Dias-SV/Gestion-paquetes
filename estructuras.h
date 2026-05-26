@@ -48,7 +48,7 @@ void printQueue();
 //Lista circular
 void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion);
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
-void recorrer(Nodo *cabeza);
+void mostrarCamiones(Nodo *cabeza, const char *mensaje);
 void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor);
 void liberar(Nodo *cabeza, Nodo *ultimo);
 

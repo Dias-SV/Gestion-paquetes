@@ -19,14 +19,21 @@ Historial *cabezaH = NULL;
 
 int main()
 {
-    int opcionM=0, id=0, cantidad=0, opcionE=0, opcionS=0;//Opciones del menu
+    int opcionM=0, id=0, cantidad=0, opcionE=0;//Opciones del menu
     
     Camion camion, camionChico, camionMedio, camionGrande;
     camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
     camionChico.carga = 0, camionMedio.carga = 0, camionGrande.carga = 0;
     camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
     camionChico.pila.tope = -1, camionMedio.pila.tope = -1, camionGrande.pila.tope = -1;
+    Paquete paquete1, paquete2, paquete3;
+    paquete1.id = 1, paquete1.peso = 10;
+    paquete2.id = 2, paquete2.peso = 20;
+    paquete3.id = 3, paquete3.peso = 30;
 
+    enqueue(paquete1.id, paquete1.peso);
+    enqueue(paquete2.id, paquete2.peso);
+    enqueue(paquete3.id, paquete3.peso);
     insertarFinal(&cabeza, &ultimo, &camionChico);
     insertarFinal(&cabeza, &ultimo, &camionMedio);
     insertarFinal(&cabeza, &ultimo, &camionGrande);
@@ -62,7 +69,7 @@ int main()
             switch (opcionE)
             {
             case 0:
-                while (noLetra("ID del paquete: ", &id) == 0)//Verifica que no se pongan letras
+                while (noLetra("\nID del paquete: ", &id) == 0)//Verifica que no se pongan letras
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
@@ -83,32 +90,68 @@ int main()
                 printf("Opcion invalida.\n\n");
                 break;
             }
-        } while (opcionE != 1);
+        } while(opcionE != 1);
         break;
         
     case 2:
-        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        do //Submenu de confirmacion de opcion
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
-        {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        camion.id = id, camion.capacidad = cantidad;
-        insertarFinal(&cabeza, &ultimo, &camion);
+            opcionE = confirmacion(); //Se valida el caracter para el proceso
+            switch (opcionE)
+            {
+            case 0:
+                while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                camion.id = id, camion.capacidad = cantidad;
+                insertarFinal(&cabeza, &ultimo, &camion);
+                opcionE = 1; //Para no volver al loop
+                break;
+
+            case 1:
+                printf("\nCerrando submenu.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }        
+        } while(opcionE != 1);
         break;
 
     case 3:
-        while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+        do //Submenu de confirmacion de opcion
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        if (buscarCamion(cabeza, id) == NULL)
-        {
-            break;
-        }
-        insertarFinal(&cabeza, &ultimo, buscarCamion(cabezaF, id));
+            opcionE = confirmacion(); //Se valida el caracter para el proceso
+            switch (opcionE)
+            {
+            case 0:
+                while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarCamion(cabeza, id) == NULL)
+                {
+                    break;
+                }   
+                insertarFinal(&cabeza, &ultimo, buscarCamion(cabezaF, id));
+                opcionE = 1; //Para no volver al loop
+                break;
+
+        case 1:
+                printf("\nCerrando submenu.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }        
+        } while(opcionE != 1);
         break;
 
     case 4:
@@ -118,66 +161,164 @@ int main()
             break;
         }
         printf("Se quitara el camion con ID: %d de la base\nEsta seguro? [s/n]: ", cabeza->camion.id);
+        do
+        {
+            opcionE = confirmacion();
+            switch (opcionE)
+            {
+            case 0:
+                insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
+                quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
+                opcionE = 1; //Para no volver al loop
+                break;
 
-        insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
-        quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
+            case 1:
+                printf("\nOperacion cancelada.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+        } while(opcionE == -1);
         break;
     
     case 5:
-        while (noLetra("A que camion quieres asignar el paquete al frente de la cola: ", &id) == 0)//Verifica que no se pongan letras
+        do
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        if (buscarCamion(cabeza, id) == NULL)
-        {
-            break;
-        }
-        asignarPaquete(cabeza, ultimo, &pila, id);
-        mostrar(&pila);
-        printQueue();
+            opcionE = confirmacion();
+            switch (opcionE)
+            {
+            case 0:
+                while (noLetra("A que camion quieres asignar el siguiente paquete: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarCamion(cabeza, id) == NULL)
+                {
+                    break;
+                }
+                asignarPaquete(cabeza, ultimo, &pila, id);
+                mostrar(&pila);
+                printQueue();
+                opcionE = 1; //Para no volver al loop
+                break;
+            
+            case 1:
+                printf("\nOperacion cancelada.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+        } while(opcionE != 1);
         break;
         
     case 6:
-        while (noLetra("Camion que entrego el paquete: ", &id) == 0)//Verifica que no se pongan letras
+        do
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        if (buscarCamion(cabeza, id) == NULL)
-        {
-            break;
-        }
-        registrarEntrega(&cabezaH, buscarCamion(cabeza, id));
+            opcionE = confirmacion();
+            switch (opcionE)
+            {
+            case 0:
+                while (noLetra("Camion que entrego el paquete: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarCamion(cabeza, id) == NULL)
+                {
+                    break;
+                }
+                registrarEntrega(&cabezaH, buscarCamion(cabeza, id));
+                opcionE = 1; //Para no volver al loop
+                break;
+
+            case 1:
+                printf("\nOperacion cancelada.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+            } while(opcionE != 1);
         break;
     
     case 7:
-        while (noLetra("A que camion quieres quitarle el ultimo paquete: ", &id) == 0)//Verifica que no se pongan letras
+        do
         {
-            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-        }
-        if (buscarCamion(cabeza, id) == NULL)
-        {
-            break;
-        }
-        deshacerAsignacion(cabeza, ultimo, &pila, id);
+            opcionE = confirmacion();
+            switch (opcionE)
+            {
+            case 0:
+                while (noLetra("A que camion quieres quitarle el ultimo paquete: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarCamion(cabeza, id) == NULL)
+                {
+                    break;
+                }
+                deshacerAsignacion(cabeza, ultimo, &pila, id);
+                opcionE = 1; //Para no volver al loop
+                break;
+                
+            case 1:
+                printf("\nOperacion cancelada.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+            } while(opcionE != 1);
         break;
 
     case 8:
+        printf("\n===== REPORTES =====\n");
         printQueue();
-        mostrar(&pila);
+        mostrarCamiones(cabeza, "en la base");
+        mostrarCamiones(cabezaF, "fuera de la base");
+        mostrarHistorial(cabezaH);
         break;
     
     case 9:
-        printf("Turno actual de los camiones:\n");
-        recorrer(cabeza);
-        printf("Que camion quiere rotar? ");
-        scanf("%d", &cantidad);
-        getchar();
-        printf("\nEn que turno lo va a pone: ");
-        scanf("%d", &id);
-        getchar();
-        rotar(&cabeza, &ultimo, cantidad, id);
-        printf("Turno actual de los camiones:\n");
-        recorrer(cabeza);
+        do
+        {
+            opcionE = confirmacion();
+            switch (opcionE)
+            {
+            case 0:
+                printf("Turno actual de los camiones:\n");
+                mostrarCamiones(cabeza, "en la base");
+                while (noLetra("Camion que quiere rotar: ", &id) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarCamion(cabeza, id) == NULL)
+                {
+                    break;
+                }
+                while (noLetra("En que turno lo va a poner: ", &cantidad) == 0)//Verifica que no se pongan letras
+                {
+                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                rotar(&cabeza, &ultimo, cantidad, id);
+                printf("Turno actual de los camiones:\n");
+                mostrarCamiones(cabeza, "en la base");
+                opcionE = 1; //Para no volver al loop
+                break;
+                
+            case 1:
+                printf("\nOperacion cancelada.\n");
+                break;
+
+            default:
+                printf("Opcion invalida.\n\n");
+                break;
+            }
+            } while(opcionE != 1);
         break;
         
     case 10:
