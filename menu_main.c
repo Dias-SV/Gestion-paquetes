@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "estructuras.h"
 
 int confirmacion();
@@ -102,11 +103,11 @@ int main()
         {
             printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
         }
-        if (buscarCamion(cabeza, id) == -1)
+        if (buscarCamion(cabeza, id) == NULL)
         {
             break;
         }
-        insertarFinal(&cabeza, &ultimo, buscarCamion(cabeza, id));
+        insertarFinal(&cabeza, &ultimo, buscarCamion(cabezaF, id));
         break;
 
     case 4:
@@ -114,17 +115,21 @@ int main()
         {
             printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
         }
-        if (buscarCamion(cabeza, id) == -1)
+        if (buscarCamion(cabeza, id) == NULL)
         {
             break;
         }
-        insertarFinal(&cabezaF, &ultimoF, buscarCamion(cabezaF, id));
+        insertarFinal(&cabezaF, &ultimoF, buscarCamion(cabeza, id));
         break;
     
     case 5:
         while (noLetra("A que camion quieres asignar el paquete al frente de la cola: ", &id) == 0)//Verifica que no se pongan letras
         {
             printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        if (buscarCamion(cabeza, id) == NULL)
+        {
+            break;
         }
         asignarPaquete(cabeza, ultimo, &pila, id);
         mostrar(&pila);
@@ -136,7 +141,7 @@ int main()
         {
             printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
         }
-        if (buscarCamion(cabeza, id) == -1)
+        if (buscarCamion(cabeza, id) == NULL)
         {
             break;
         }
@@ -144,7 +149,15 @@ int main()
         break;
     
     case 7:
-        deshacerAsignacion(cabeza, ultimo, &pila, &pilaD);
+        while (noLetra("A que camion quieres quitarle el ultimo paquete: ", &id) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+        }
+        if (buscarCamion(cabeza, id) == NULL)
+        {
+            break;
+        }
+        deshacerAsignacion(cabeza, ultimo, &pila, id);
         break;
 
     case 8:

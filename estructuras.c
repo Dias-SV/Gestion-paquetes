@@ -208,37 +208,6 @@ void recorrer(Nodo *cabeza) //Solo para checar
     printf("\n");
 }
 
-int buscar(Nodo *cabeza, int id) 
-{
-    if (cabeza == NULL) //Sin esto crashea
-    {
-        printf("No hay camiones\n");
-        return 0;
-    }
-    
-    int exito = 0;
-    int posicion = 1;
-    Nodo *temp = cabeza;
-    Nodo *antes;
-    do
-    {
-        if(temp->camion.id == id)
-        {
-            exito = 1;
-            break;
-        }
-        antes = temp;
-        temp = temp->siguiente;
-        posicion++;
-    } while (temp != cabeza);
-    if (exito == 0)
-    {
-        printf("No se encontro el camion con ID: %d\n", id);
-        return 0;
-    }
-    return posicion;
-}
-
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor)
 {
     if(*cabeza == NULL)
@@ -400,25 +369,22 @@ void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
         printf("No se encontro el camion con ID: %d\n", valor);
         return;
     }
-    if (cabeza == NULL) //Sin esto crashea
-    {
-        printf("La lista esta vacia\n");
-        return;
-    }
     
     if (temp->camion.capacidad > temp->camion.carga && cola.paquete[cola.frente].peso < (temp->camion.capacidad - temp->camion.carga))
     {
-        if (push(&temp->camion.pila, dequeue()) == 1)
+        Paquete paquete = dequeue(); //Saco el paquete de la cola y lo almaceno en la variable local
+        if (push(&temp->camion.pila, paquete) == 1)
         {
             return;
         }
-        temp->camion.carga = pila->paquete[pila->tope].peso + temp->camion.carga;
-        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", pila->paquete[pila->tope].id, temp->camion.id);
+        temp->camion.carga = paquete.peso + temp->camion.carga; 
+        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", paquete.id, temp->camion.id);
         return;
     }
     
     printf("Paquete con ID: %d NO se agrego al camion con ID: %d porque excede el peso.\nPeso paquete: %dkg. Espacio restante en el camion %d.\n"
-    , cola.paquete[cola.frente].id, temp->camion.id, pila->paquete[pila->tope].peso, temp->camion.capacidad - temp->camion.carga);
+    , cola.paquete[cola.frente].id, temp->camion.id, 
+    cola.paquete[cola.frente].peso, temp->camion.capacidad - temp->camion.carga); //Las puse asi porque no salieron de la cola
 }
 
 void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
@@ -475,29 +441,22 @@ Camion* buscarCamion(Nodo *cabeza, int valor)
     if (cabeza == NULL) //Sin esto crashea
     {
         printf("No hay camiones\n");
-        Camion vacio = {-1};
-        return &vacio;
+        return NULL;
     }
     
-    int exito = 0;
     Nodo *temp = cabeza;
     do
     {
         if(temp->camion.id == valor)
         {
-            exito = 1;
-            break;
+            return &temp->camion;
         }
         temp = temp->siguiente;
     } while (temp != cabeza);
-    
-    if (exito == 0)
-    {
-        printf("No se encontro el camion con ID: %d\n", valor);
-        Camion vacio = {-1};
-        return &vacio;
-    }
-    return &temp->camion;
+
+    printf("No se encontro el camion con ID: %d\n", valor);
+    return NULL;
+
 }
 
 void registrarEntrega(Historial **cabeza, Camion *camion)

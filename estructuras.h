@@ -3,12 +3,6 @@
 
 #define MAX 5
 //No se que PUTAS estoy haciendo
-typedef struct Camion{
-    int id;
-    int capacidad;
-    int carga;
-    Pila pila;
-}Camion; 
 
 typedef struct Paquete{
     int id;
@@ -26,6 +20,13 @@ typedef struct Pila{
     Paquete paquete[MAX];
     int tope;
 } Pila;
+
+typedef struct Camion{ //Lo puse aqui pooque dependo de pila
+    int id;
+    int capacidad;
+    int carga;
+    Pila pila;
+}Camion; 
 
 typedef struct Nodo {
     Camion camion;
@@ -49,7 +50,6 @@ void printQueue();
 void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion);
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
 void recorrer(Nodo *cabeza);
-int buscar(Nodo *cabeza, int id);
 void eliminar(Nodo **cabeza, Nodo **ultimo, int valor);
 void liberar(Nodo *cabeza, Nodo *ultimo);
 
@@ -62,7 +62,7 @@ void mostrar(Pila *pila);
 
 //Asignacion
 void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
-int deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
+void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
 
 //Historial
 Camion* buscarCamion(Nodo *cabeza, int valor);
