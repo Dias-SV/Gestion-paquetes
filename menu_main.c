@@ -92,7 +92,8 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (registrarIdCamion(camion.id, cabeza) == 1) //Para no repetir
+                Nodo *temp = buscarCamion(cabeza, id);
+                if(registrarIdCamion(temp->camion.id, cabeza) == 1) //Para no repetir
                 {
                     printf("ID ya registrado\n\n");
                     printf("Desea continuar con el registro de camion?\n");
@@ -102,8 +103,8 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                camion.id = id, camion.capacidad = cantidad;
-                insertarFinal(&cabeza, &ultimo, &camion);
+                temp->camion.id = id, temp->camion.capacidad = cantidad;
+                insertarFinal(&cabeza, &ultimo, &temp->camion);
                 opcionE = 1; //Para no volver al loop
                 break;
 
