@@ -44,7 +44,7 @@ int registrarIdCamion(int valor, Nodo *cabeza)
     return 0;
 }
 
-//Operaciones para cola doble
+//Operaciones cola doble
 int insertarAtras(int id, int peso)
 {
     if (isFullCola() == 1)
@@ -98,6 +98,7 @@ Paquete dequeue() //Regreso un paquete para poder guardarlo en otras estructuras
     Paquete temp = {-1}; //Para que no haya problema con otros paquetes
     if (isEmptyCola() == 1)
     {
+        printf("La cola esta vacia\n");
         return temp;
     }
 
@@ -121,7 +122,6 @@ int isEmptyCola()
 {
     if (cola.size == 0)
     {
-        printf("\nLa cola esta vacia\n");
         return 1;
     }
     return 0;
@@ -132,6 +132,7 @@ void printQueue()
     int i = cola.frente;
     if (isEmptyCola() == 1)
     {
+        printf("La cola esta vacia\n");
         return;
     }
 
@@ -154,7 +155,6 @@ void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
     }
     nuevo->camion = *camion;
     
-
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
         nuevo->siguiente = nuevo;
@@ -259,7 +259,7 @@ void mostrarCamiones(Nodo *cabeza, const char *mensaje)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
-        printf("No hay camiones\n");
+        printf("No hay camiones %s\n", mensaje);
         return;
     }
     
@@ -429,7 +429,7 @@ void asignarPaquete(Nodo *cabeza, Pila *pila, int valor)
         return;
     }
     
-    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.paquete[cola.frente].peso < (cabeza->camion.capacidad - cabeza->camion.carga))
+    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.paquete[cola.frente].peso <= (cabeza->camion.capacidad - cabeza->camion.carga))
     {
         Paquete paquete = dequeue(); //Saco el paquete de la cola y lo almaceno en la variable local
         if (push(&cabeza->camion.pila, paquete) == 1)
@@ -471,7 +471,7 @@ void deshacerAsignacion(Nodo *cabeza, Pila *pila)
     printf("Asignacion deshecha\n");
 }
 
-Camion* buscarCamion(Nodo *cabeza, int valor)
+Nodo* buscarCamion(Nodo *cabeza, int valor)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
@@ -484,7 +484,7 @@ Camion* buscarCamion(Nodo *cabeza, int valor)
     {
         if(temp->camion.id == valor)
         {
-            return &temp->camion;
+            return temp;
         }
         temp = temp->siguiente;
     } while (temp != cabeza);
@@ -529,8 +529,6 @@ void registrarEntrega(Historial **cabeza, Camion *camion)
 
         temp->siguiente = nuevo;
     }
-
-    printf("Entrega registrada\n");
 }
 
 void mostrarHistorial(Historial *cabeza)

@@ -1,7 +1,7 @@
 #ifndef estructuras_h
 #define estructuras_h
 
-#define MAX 5
+#define MAX 50
 
 typedef struct ID{
     int id[MAX];
@@ -47,7 +47,7 @@ int registrarIdPaquete(int valor);
 int buscarIdPaquete(int valor);
 int registrarIdCamion(int valor, Nodo *cabeza);
 
-//Cola
+//Cola doble
 int insertarAtras(int id, int peso);
 int insertarAdelante(int id, int peso);
 Paquete dequeue();
@@ -74,7 +74,7 @@ void asignarPaquete(Nodo *cabeza, Pila *pila, int valor);
 void deshacerAsignacion(Nodo *cabeza, Pila *pila);
 
 //Historial
-Camion* buscarCamion(Nodo *cabeza, int valor);
+Nodo* buscarCamion(Nodo *cabeza, int valor);
 void registrarEntrega(Historial **cabeza, Camion *camion);
 void mostrarHistorial(Historial *cabeza);
 void liberarH(Historial *cabeza);

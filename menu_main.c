@@ -19,23 +19,6 @@ Historial *cabezaH = NULL;
 int main()
 {
     int opcionM=0, id=0, cantidad=0, opcionE=0;//Opciones del menu
-    
-    Camion camion, camionChico, camionMedio, camionGrande;
-    camionChico.capacidad = 100, camionMedio.capacidad = 500, camionGrande.capacidad = 1000;
-    camionChico.carga = 0, camionMedio.carga = 0, camionGrande.carga = 0;
-    camionChico.id = 1, camionMedio.id = 2, camionGrande.id = 3;
-    camionChico.pila.tope = -1, camionMedio.pila.tope = -1, camionGrande.pila.tope = -1;
-    Paquete paquete1, paquete2, paquete3;
-    paquete1.id = 1, paquete1.peso = 10;
-    paquete2.id = 2, paquete2.peso = 20;
-    paquete3.id = 3, paquete3.peso = 30;
-
-    insertarAtras(paquete1.id, paquete1.peso);
-    insertarAtras(paquete2.id, paquete2.peso);
-    insertarAtras(paquete3.id, paquete3.peso);
-    insertarFinal(&cabeza, &ultimo, &camionChico);
-    insertarFinal(&cabeza, &ultimo, &camionMedio);
-    insertarFinal(&cabeza, &ultimo, &camionGrande);
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
@@ -61,7 +44,7 @@ int main()
 
     switch (opcionM)
     {
-    case 1:
+    case 1: //Registrar paquete
         do //Submenu de confirmacion de opcion
         {
             opcionE = confirmacion(); //Se valida el caracter para el proceso
@@ -71,6 +54,12 @@ int main()
                 while (noLetra("\nID del paquete: ", &id) == 0)//Verifica que no se pongan letras
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (buscarIdPaquete(id) == 1);
+                {
+                    printf("ID ya registrado\n\n");
+                    printf("Desea continuar con el registro de paquete?\n");
+                    break;
                 }
                 while (noLetra("Peso del paquete: ", &cantidad) == 0)//Verifica que no se pongan letras
                 {
@@ -82,7 +71,7 @@ int main()
                 break;
         
             case 1:
-                printf("\nCerrando submenu.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -92,7 +81,7 @@ int main()
         } while(opcionE != 1);
         break;
         
-    case 2:
+    case 2: //Registrar nuevo camion
         do //Submenu de confirmacion de opcion
         {
             opcionE = confirmacion(); //Se valida el caracter para el proceso
@@ -105,7 +94,8 @@ int main()
                 }
                 if (registrarIdCamion(camion.id, cabeza) == 1) //Para no repetir
                 {
-                    printf("ID ya registrado\n");
+                    printf("ID ya registrado\n\n");
+                    printf("Desea continuar con el registro de camion?\n");
                     break;
                 }
                 while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
@@ -118,7 +108,7 @@ int main()
                 break;
 
             case 1:
-                printf("\nCerrando submenu.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -128,7 +118,7 @@ int main()
         } while(opcionE != 1);
         break;
 
-    case 3:
+    case 3: //Registro llegada camion
         do //Submenu de confirmacion de opcion
         {
             opcionE = confirmacion(); //Se valida el caracter para el proceso
@@ -139,16 +129,20 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (buscarCamion(cabeza, id) == NULL)
+                Nodo *temp = buscarCamion(cabeza, id);
+                if(temp == NULL)
                 {
+                    printf("Camion no encontrado.\n\n");
+                    printf("Desea buscar otro camion?\n");
                     break;
-                }   
-                insertarFinal(&cabeza, &ultimo, buscarCamion(cabezaF, id));
+                }
+                temp = buscarCamion(cabezaF, id);
+                insertarFinal(&cabeza, &ultimo, &temp->camion);
                 opcionE = 1; //Para no volver al loop
                 break;
 
         case 1:
-                printf("\nCerrando submenu.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -158,7 +152,7 @@ int main()
         } while(opcionE != 1);
         break;
 
-    case 4:
+    case 4: //Registro salida camion
         if (cabeza == NULL)
         {
             printf("No hay camiones en la base\n");
@@ -177,7 +171,7 @@ int main()
                 break;
 
             case 1:
-                printf("\nOperacion cancelada.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -187,7 +181,12 @@ int main()
         } while(opcionE == -1);
         break;
     
-    case 5:
+    case 5: //Asignar paquete
+        if (cabeza == NULL)
+        {
+            printf("No hay camiones en la base\n\n");
+            break;
+        }
         printf("Camion al que se le asignara el paquete del frente de la cola:\n");
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
         cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
@@ -199,13 +198,13 @@ int main()
             {
             case 0:
                 asignarPaquete(cabeza, &pila, id);
-                mostrar(&pila);
+                mostrar(&cabeza->camion.pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
                 break;
             
             case 1:
-                printf("\nOperacion cancelada.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -215,27 +214,63 @@ int main()
         } while(opcionE != 1);
         break;
         
-    case 6:
+    case 6: //Registrar entrega
+        if (cabeza == NULL)
+        {
+            printf("No hay camiones en la base\n\n");
+            break;
+        }
         do
         {
             opcionE = confirmacion();
             switch (opcionE)
             {
             case 0:
-                while (noLetra("Camion que entrego el paquete: ", &id) == 0)//Verifica que no se pongan letras
+                while (noLetra("\nCamion que entrego el paquete: ", &id) == 0)//Verifica que no se pongan letras
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (buscarCamion(cabeza, id) == NULL)
+                Nodo *temp = buscarCamion(cabeza, id);
+                if (temp == NULL)
                 {
+                    printf("Camion no encontrado.\n\n");
+                    printf("Desea buscar otro camion?\n");
                     break;
                 }
-                registrarEntrega(&cabezaH, buscarCamion(cabeza, id));
+                if (isEmptyPila(&temp->camion.pila) == 1)
+                {
+                    printf("No hay paquetes en el camion con ID: %d\n", temp->camion.id);
+                    printf("Desea buscar otro camion?\n");
+                    break;
+                }
+                printf("Fue exitosa la entrega del paquete con ID: %d?\n", temp->camion.pila.paquete[temp->camion.pila.tope].id);
+                do
+                {
+                    cantidad = confirmacion(); //No quize hacer otra variable
+                    switch (cantidad)
+                    {
+                    case 0:
+                        temp = buscarCamion(cabeza, id);
+                        registrarEntrega(&cabezaH, &temp->camion);
+                        printf("Entrega registrada en el historial.\n");
+                        cantidad = 1; //Para no volver al loop
+                        break;
+
+                    case 1:
+                        deshacerAsignacion(temp, &pila); //Es el mismo proceso solo que en un camion especifico
+                        printf("\nRegistro de entrega cancelado.\nEl paquete se regreso al frente de la cola.\n\n");
+                        break;
+
+                    default:
+                        printf("Opcion invalida.\n\n");
+                        break;
+                    }
+                } while (cantidad != 1);
                 opcionE = 1; //Para no volver al loop
                 break;
 
             case 1:
-                printf("\nOperacion cancelada.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -245,7 +280,12 @@ int main()
             } while(opcionE != 1);
         break;
     
-    case 7:
+    case 7: //Deshacer ultima asignacion
+        if (cabeza == NULL)
+        {
+            printf("No hay camiones en la base\n");
+            break;
+        }
         printf("Camion al que se le quitara el paquete en el tope de la pila:\n");
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
         cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
@@ -261,7 +301,7 @@ int main()
                 break;
                 
             case 1:
-                printf("\nOperacion cancelada.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
@@ -279,7 +319,7 @@ int main()
         mostrarHistorial(cabezaH);
         break;
     
-    case 9:
+    case 9: //Rotar turno
         do
         {
             opcionE = confirmacion();
@@ -307,7 +347,7 @@ int main()
                 break;
                 
             case 1:
-                printf("\nOperacion cancelada.\n");
+                printf("\nCerrando submenu.\n\n");
                 break;
 
             default:
