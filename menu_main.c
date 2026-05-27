@@ -34,14 +34,12 @@ int main()
         printf("8. Reporte de estado\n");
         printf("9. Rotar turno de camiones\n");
         printf("10. Salir\n");
-        printf("Opcion: ");
-
-        scanf("%d", &opcionM);
-        getchar();
+        while (noLetra("Opcion: ", &opcionM) == 0)//Verifica que no se pongan letras
+        {
+            printf("Entrada invalida. Ingresa un numero entre 1 y 10.\n\n");
+        }
         printf("\n");
     
-
-
     switch (opcionM)
     {
     case 1: //Registrar paquete
@@ -179,7 +177,7 @@ int main()
                 printf("Opcion invalida.\n\n");
                 break;
             }
-        } while(opcionE == -1);
+        } while(opcionE != 1);
         break;
     
     case 5: //Asignar paquete
