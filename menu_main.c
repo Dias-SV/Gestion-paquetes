@@ -53,7 +53,7 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (buscarIdPaquete(id) == 1);
+                if (buscarIdPaquete(id) == 1)
                 {
                     printf("ID ya registrado\n\n");
                     printf("Desea continuar con el registro de paquete?\n");
@@ -90,8 +90,7 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                Nodo *temp = buscarCamion(cabeza, id);
-                if(registrarIdCamion(temp->camion.id, cabeza) == 1) //Para no repetir
+                if(registrarIdCamion(id, cabeza) == 1) //Para no repetir
                 {
                     printf("ID ya registrado\n\n");
                     printf("Desea continuar con el registro de camion?\n");
@@ -101,8 +100,9 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                temp->camion.id = id, temp->camion.capacidad = cantidad;
-                insertarFinal(&cabeza, &ultimo, &temp->camion);
+                Camion temp = {.id = id, .capacidad = cantidad, .carga = 0, .pila = {.tope = -1}};
+                insertarFinal(&cabeza, &ultimo, &temp);
+                printf("Camion con ID: %d registrado correctamente.\n", id);
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -120,6 +120,12 @@ int main()
     case 3: //Registro llegada camion
         do //Submenu de confirmacion de opcion
         {
+            if (cabezaF == NULL)
+            {
+            printf("No hay camiones fuera\n");
+            opcionE = 1; //Para no volver al loop
+            break;
+            }
             opcionE = confirmacion(); //Se valida el caracter para el proceso
             switch (opcionE)
             {
@@ -128,15 +134,15 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                Nodo *temp = buscarCamion(cabeza, id);
+                Nodo *temp = buscarCamion(cabezaF, id);
                 if(temp == NULL)
                 {
                     printf("Camion no encontrado.\n\n");
                     printf("Desea buscar otro camion?\n");
                     break;
                 }
-                temp = buscarCamion(cabezaF, id);
                 insertarFinal(&cabeza, &ultimo, &temp->camion);
+                quitarCamion(&cabezaF, &ultimoF, id);
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -155,6 +161,7 @@ int main()
         if (cabeza == NULL)
         {
             printf("No hay camiones en la base\n");
+            opcionE = 1; //Para no volver al loop
             break;
         }
         printf("Se quitara el camion con ID: %d de la base\nEsta seguro? [s/n]: ", cabeza->camion.id);
@@ -196,7 +203,7 @@ int main()
             switch (opcionE)
             {
             case 0:
-                asignarPaquete(cabeza, &pila, id);
+                asignarPaquete(cabeza, &pila);
                 mostrar(&cabeza->camion.pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
@@ -249,7 +256,6 @@ int main()
                     switch (cantidad)
                     {
                     case 0:
-                        temp = buscarCamion(cabeza, id);
                         registrarEntrega(&cabezaH, &temp->camion);
                         printf("Entrega registrada en el historial.\n");
                         cantidad = 1; //Para no volver al loop
@@ -339,9 +345,9 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                rotar(&cabeza, &ultimo, cantidad, id);
+                rotar(&cabeza, &ultimo, id, cantidad); //Cambia los turnos
                 printf("Turno actual de los camiones:\n");
-                mostrarCamiones(cabeza, "en la base");
+                mostrarCamiones(cabeza, "en la base"); //Enseña el nuevo orden
                 opcionE = 1; //Para no volver al loop
                 break;
                 
@@ -402,13 +408,13 @@ int noLetra(const char *letras, int *numero)
         return 0;
 
     char *fin;
-    long valor = strtol(buffer, &fin, 10); //Trata de convertir el texto en un numero, el puntero para donde para la conversion
+    long valor = strtol(buffer, &fin, 10); //Convierte el texto en un numero
 
     if (fin == buffer || (*fin != '\n' && *fin != '\0')) //Fin debe apuntar al final si no habia letras
     {
         return 0;
     }
-    if (valor < 1 || valor > 1000000) //Limite para evitar numeros muy grandes o negativos
+    if (valor < 1) //Evita numeros negativos
     {
         return 0;
     }

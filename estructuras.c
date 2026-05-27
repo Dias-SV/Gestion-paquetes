@@ -3,7 +3,6 @@
 #include "estructuras.h"
 
 Cola cola = {.frente = 0, .final = -1, .size = 0}; //Asi inicalizo la cola
-Camion camion;
 //Para saber las ids usadas
 ID idPaquete;
 ID idCamion;
@@ -23,7 +22,7 @@ int registrarIdPaquete(int valor)
 
 int buscarIdPaquete(int valor)
 {
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < idPaquete.posicion; i++)
     {
         if (idPaquete.id[i] == valor)
         {
@@ -165,9 +164,8 @@ void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
     {
         nuevo->siguiente = *cabeza;
     }
-
     (*ultimo)->siguiente = nuevo;
-    *ultimo = nuevo;   
+    *ultimo = nuevo;
 }
 
 void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
@@ -283,7 +281,7 @@ void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor)
         return;
     }
     Nodo *temp = *cabeza;
-    Nodo *antes;
+    Nodo *antes = *ultimo;
     int exito = 0;
     do
     {
@@ -394,7 +392,6 @@ int isEmptyPila(Pila *pila)
 {
     if (pila->tope <= -1)
     {
-        printf("\nLa pila esta vacia\n");
         return 1;
     }
     return 0;
@@ -404,6 +401,7 @@ void mostrar(Pila *pila)
 {
     if (isEmptyPila(pila) == 1)
     {
+        printf("La pila esta vacia\n");
         return;
     }
     printf("Estado de la pila:\n");
@@ -415,9 +413,9 @@ void mostrar(Pila *pila)
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza, Pila *pila, int valor)
+void asignarPaquete(Nodo *cabeza, Pila *pila)
 {
-    if (isFullCola() == 1)
+    if (isEmptyCola() == 1)
     {
         printf("No hay paquetes\n");
         return;
@@ -468,6 +466,7 @@ void deshacerAsignacion(Nodo *cabeza, Pila *pila)
         return;
     }
     insertarAdelante(paquete.id, paquete.peso); //Lo regreso a la cola para no perder el paquete
+    cabeza->camion.carga = cabeza->camion.carga - paquete.peso;
     printf("Asignacion deshecha\n");
 }
 
@@ -475,7 +474,6 @@ Nodo* buscarCamion(Nodo *cabeza, int valor)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
-        printf("No hay camiones\n");
         return NULL;
     }
     
@@ -488,9 +486,7 @@ Nodo* buscarCamion(Nodo *cabeza, int valor)
         }
         temp = temp->siguiente;
     } while (temp != cabeza);
-
-    printf("No se encontro el camion con ID: %d\n", valor);
-    return NULL;
+    return NULL; //Si no encuentra
 
 }
 

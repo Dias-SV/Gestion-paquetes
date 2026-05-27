@@ -70,7 +70,7 @@ int isEmptyPila(Pila *pila);
 void mostrar(Pila *pila);
 
 //Asignacion
-void asignarPaquete(Nodo *cabeza, Pila *pila, int valor);
+void asignarPaquete(Nodo *cabeza, Pila *pila);
 void deshacerAsignacion(Nodo *cabeza, Pila *pila);
 
 //Historial
