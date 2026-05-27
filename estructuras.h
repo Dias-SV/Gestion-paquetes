@@ -2,7 +2,11 @@
 #define estructuras_h
 
 #define MAX 5
-//No se que PUTAS estoy haciendo
+
+typedef struct ID{
+    int id[MAX];
+    int posicion;
+} ID;
 
 typedef struct Paquete{
     int id;
@@ -38,8 +42,14 @@ typedef struct Historial{
     struct Historial *siguiente;
 }Historial;
 
+//Verificacion de ID
+int registrarIdPaquete(int valor);
+int buscarIdPaquete(int valor);
+int registrarIdCamion(int valor, Nodo *cabeza);
+
 //Cola
-int enqueue(int id, int peso);
+int insertarAtras(int id, int peso);
+int insertarAdelante(int id, int peso);
 Paquete dequeue();
 int isFullCola();
 int isEmptyCola();
@@ -60,8 +70,8 @@ int isEmptyPila(Pila *pila);
 void mostrar(Pila *pila);
 
 //Asignacion
-void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
-void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor);
+void asignarPaquete(Nodo *cabeza, Pila *pila, int valor);
+void deshacerAsignacion(Nodo *cabeza, Pila *pila);
 
 //Historial
 Camion* buscarCamion(Nodo *cabeza, int valor);

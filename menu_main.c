@@ -7,7 +7,6 @@ int confirmacion();
 int noLetra(const char *letras, int *numero);
 
 Pila pila = {.tope = -1}; //Pila de paquetes para meter en camion
-Pila pilaD = {.tope = -1}; //Pila de paquetes desasignados para poder volver a asignar
 //Camiones en la base
 Nodo *cabeza = NULL;
 Nodo *ultimo = NULL;
@@ -31,9 +30,9 @@ int main()
     paquete2.id = 2, paquete2.peso = 20;
     paquete3.id = 3, paquete3.peso = 30;
 
-    enqueue(paquete1.id, paquete1.peso);
-    enqueue(paquete2.id, paquete2.peso);
-    enqueue(paquete3.id, paquete3.peso);
+    insertarAtras(paquete1.id, paquete1.peso);
+    insertarAtras(paquete2.id, paquete2.peso);
+    insertarAtras(paquete3.id, paquete3.peso);
     insertarFinal(&cabeza, &ultimo, &camionChico);
     insertarFinal(&cabeza, &ultimo, &camionMedio);
     insertarFinal(&cabeza, &ultimo, &camionGrande);
@@ -77,7 +76,7 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                enqueue(id, cantidad);
+                insertarAtras(id, cantidad);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
                 break;
@@ -103,6 +102,11 @@ int main()
                 while (noLetra("ID del camion: ", &id) == 0)//Verifica que no se pongan letras
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
+                }
+                if (registrarIdCamion(camion.id, cabeza) == 1) //Para no repetir
+                {
+                    printf("ID ya registrado\n");
+                    break;
                 }
                 while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
                 {
@@ -184,21 +188,17 @@ int main()
         break;
     
     case 5:
+        printf("Camion al que se le asignara el paquete del frente de la cola:\n");
+        printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
+        cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
+        printf("Esta seguro de esta accion?\n");
         do
-        {
+        {   
             opcionE = confirmacion();
             switch (opcionE)
             {
             case 0:
-                while (noLetra("A que camion quieres asignar el siguiente paquete: ", &id) == 0)//Verifica que no se pongan letras
-                {
-                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-                }
-                if (buscarCamion(cabeza, id) == NULL)
-                {
-                    break;
-                }
-                asignarPaquete(cabeza, ultimo, &pila, id);
+                asignarPaquete(cabeza, &pila, id);
                 mostrar(&pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
@@ -246,21 +246,17 @@ int main()
         break;
     
     case 7:
+        printf("Camion al que se le quitara el paquete en el tope de la pila:\n");
+        printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
+        cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
+        printf("Esta seguro de esta accion?\n");
         do
         {
             opcionE = confirmacion();
             switch (opcionE)
             {
             case 0:
-                while (noLetra("A que camion quieres quitarle el ultimo paquete: ", &id) == 0)//Verifica que no se pongan letras
-                {
-                    printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
-                }
-                if (buscarCamion(cabeza, id) == NULL)
-                {
-                    break;
-                }
-                deshacerAsignacion(cabeza, ultimo, &pila, id);
+                deshacerAsignacion(cabeza, &pila);
                 opcionE = 1; //Para no volver al loop
                 break;
                 

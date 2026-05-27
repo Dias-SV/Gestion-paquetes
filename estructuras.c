@@ -2,20 +2,93 @@
 #include <stdlib.h>
 #include "estructuras.h"
 
-Cola cola;
+Cola cola = {.frente = 0, .final = -1, .size = 0}; //Asi inicalizo la cola
 Camion camion;
+//Para saber las ids usadas
+ID idPaquete;
+ID idCamion;
 
-//Operaciones para cola
-int enqueue (int id, int peso)
+//Registro ids
+int registrarIdPaquete(int valor)
+{
+    if (buscarIdPaquete(valor) == 1)
+    {
+        printf("ID ya registrado\n");
+        return 1;
+    }
+    idPaquete.id[idPaquete.posicion] = valor;
+    idPaquete.posicion++;
+    return 0;
+}
+
+int buscarIdPaquete(int valor)
+{
+    for (int i = 0; i < MAX; i++)
+    {
+        if (idPaquete.id[i] == valor)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int registrarIdCamion(int valor, Nodo *cabeza)
+{
+    if (buscarCamion(cabeza, valor) != NULL)
+    {
+        return 1;
+    }
+    idCamion.id[idCamion.posicion] = valor;
+    idCamion.posicion++;
+    return 0;
+}
+
+//Operaciones para cola doble
+int insertarAtras(int id, int peso)
 {
     if (isFullCola() == 1)
     {
         return 1;
     }
+    if (registrarIdPaquete(id) == 1) //Para no repetir
+    {
+        return 1;
+    }
+    
+    if (isEmptyCola() == 1) //Resetea a 0 las posiciones si esta vacia
+    {
+        cola.frente = 0;
+        cola.final = -1; //Al asignar posicion este cambia a 0
+    }
+
+    cola.size++;
+    cola.final = (cola.final + 1) % MAX;
     cola.paquete[cola.final].id = id;
     cola.paquete[cola.final].peso = peso;
-    cola.final = (cola.final + 1) % MAX;
+    return 0;
+}
+
+int insertarAdelante(int id, int peso)
+{
+    if (isFullCola() == 1)
+    {
+        return 1;
+    }
+    //No pongo verificacion de ID porque solo pondra los paquetes que se quitaron de un camion
+
+    if (isEmptyCola() == 1) //Resetea posiciones y al estar en 0 no se guarda el elemento en 4 si no en 0
+    {
+        cola.frente = 0;
+        cola.final = 0; //Para que no apunte a -1
+    }
+    else
+    {
+        cola.frente = (cola.frente - 1 + MAX) % MAX; //Mueve a la izquierda y la hace circular
+    }
     cola.size++;
+    cola.paquete[cola.frente].id = id;
+    cola.paquete[cola.frente].peso = peso;
     return 0;
     
 }
@@ -80,6 +153,8 @@ void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
         return;
     }
     nuevo->camion = *camion;
+    
+
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
         nuevo->siguiente = nuevo;
@@ -278,6 +353,15 @@ int push(Pila *pila, Paquete paquete)
     {
         return 1;
     }
+    if (paquete.id == -1 || paquete.peso == -1) //Para que no se agreguen paquetes vacios
+    {
+        printf("No se pudo agregar el paquete\n");
+        return 1;
+    }
+    if (isEmptyPila(pila) == 1) //Resetea a -1 el tope si esta vacia
+    {
+        pila->tope = -1;
+    }
     
     pila->tope++;
     pila->paquete[pila->tope] = paquete;
@@ -331,9 +415,9 @@ void mostrar(Pila *pila)
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
+void asignarPaquete(Nodo *cabeza, Pila *pila, int valor)
 {
-    if (isEmptyCola() == 1)
+    if (isFullCola() == 1)
     {
         printf("No hay paquetes\n");
         return;
@@ -344,86 +428,46 @@ void asignarPaquete(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
         printf("No hay camiones\n");
         return;
     }
-
-    //Para recorrer
-    Nodo *temp = cabeza;
-    Nodo *antes;
-    int exito = 0;
-    do
-    {
-        if(temp->camion.id == valor)
-        {
-            exito = 1;
-            break;
-        }
-        antes = temp;
-        temp = temp->siguiente;
-    } while (temp != cabeza);
     
-    if (exito == 0)
-    {
-        printf("No se encontro el camion con ID: %d\n", valor);
-        return;
-    }
-    
-    if (temp->camion.capacidad > temp->camion.carga && cola.paquete[cola.frente].peso < (temp->camion.capacidad - temp->camion.carga))
+    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.paquete[cola.frente].peso < (cabeza->camion.capacidad - cabeza->camion.carga))
     {
         Paquete paquete = dequeue(); //Saco el paquete de la cola y lo almaceno en la variable local
-        if (push(&temp->camion.pila, paquete) == 1)
+        if (push(&cabeza->camion.pila, paquete) == 1)
         {
+            insertarAdelante(paquete.id, paquete.peso); //Si no se pudo agregar a la pila lo regreso a la cola
             return;
         }
-        temp->camion.carga = paquete.peso + temp->camion.carga; 
-        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", paquete.id, temp->camion.id);
+        cabeza->camion.carga = paquete.peso + cabeza->camion.carga; 
+        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", paquete.id, cabeza->camion.id);
         return;
     }
     
     printf("Paquete con ID: %d NO se agrego al camion con ID: %d porque excede el peso.\nPeso paquete: %dkg. Espacio restante en el camion %d.\n"
-    , cola.paquete[cola.frente].id, temp->camion.id, 
-    cola.paquete[cola.frente].peso, temp->camion.capacidad - temp->camion.carga); //Las puse asi porque no salieron de la cola
+    , cola.paquete[cola.frente].id, cabeza->camion.id, 
+    cola.paquete[cola.frente].peso, cabeza->camion.capacidad - cabeza->camion.carga); //Las puse asi porque no salieron de la cola
 }
 
-void deshacerAsignacion(Nodo *cabeza, Nodo *ultimo, Pila *pila, int valor)
+void deshacerAsignacion(Nodo *cabeza, Pila *pila)
 {    
     if(cabeza == NULL)
     {
         printf("No hay camiones\n");
         return;
     }
-    
-    Nodo *temp = cabeza;
-    Nodo *antes;
-    int exito = 0;
-    do
+
+    if(isEmptyPila(&cabeza->camion.pila) == 1)
     {
-        if(temp->camion.id == valor)
-        {
-            exito = 1;
-            break;
-        }
-        antes = temp;
-        temp = temp->siguiente;
-    } while (temp != cabeza);
-    
-    if (exito == 0)
-    {
-        printf("No se encontro el camion con ID: %d\n", valor);
+        printf("No hay paquetes en el camion con ID: %d\n", cabeza->camion.id);
         return;
     }
 
-    if(isEmptyPila(&temp->camion.pila) == 1)
+    Paquete paquete = pop(&cabeza->camion.pila);
+    if (paquete.id == -1) //otro chequeo por si las dudas
     {
-        printf("No hay paquetes en el camion con ID: %d\n", temp->camion.id);
+        printf("No se pudo quitar el paquete\n");
         return;
     }
-
-    if(isFullPila(pila) == 1)
-    {
-        printf("La pila secundaria esta llena\n");
-        return;
-    }
-
-    push(pila, pop(&temp->camion.pila)); //Lo pongo en una pila secundaria para no perder el paquete
+    insertarAdelante(paquete.id, paquete.peso); //Lo regreso a la cola para no perder el paquete
     printf("Asignacion deshecha\n");
 }
 
