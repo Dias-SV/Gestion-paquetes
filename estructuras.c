@@ -125,7 +125,7 @@ void printQueue()
         return;
     }
 
-    printf("Estado de la cola:\n");
+    printf("----- Estado de la cola -----\n");
     for (int j = 0; j < cola.size; j++)
     {
         printf("ID: %d | Peso: %d\n", cola.paquete[i].id, cola.paquete[i].peso);
@@ -393,7 +393,7 @@ void mostrar(Pila *pila)
         printf("La pila esta vacia\n");
         return;
     }
-    printf("Estado de la pila:\n");
+    printf("----- Estado de la pila -----\n");
     for (int i = pila->tope; i >= 0; i--)
     {
         printf("ID: %d | Peso: %d\n", pila->paquete[i].id, pila->paquete[i].peso);
