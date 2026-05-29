@@ -7,11 +7,11 @@ int confirmacion();
 int noLetra(const char *letras, int *numero);
 
 //Camiones en la base
-Nodo *cabeza = NULL;
-Nodo *ultimo = NULL;
+Camiom *cabeza = NULL;
+Camion *ultimo = NULL;
 //Camiones fuera
-Nodo *cabezaF = NULL;
-Nodo *ultimoF = NULL;
+Camion *cabezaF = NULL;
+Camion *ultimoF = NULL;
 
 Historial *cabezaH = NULL;
 
@@ -134,14 +134,14 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                Nodo *temp = buscarCamion(cabezaF, id);
+                Camion *temp = buscarCamion(cabezaF, id);
                 if(temp == NULL)
                 {
                     printf("\nCamion no encontrado.\n");
                     printf("Desea buscar otro camion?\n");
                     break;
                 }
-                insertarFinal(&cabeza, &ultimo, &temp->camion);
+                insertarFinal(&cabeza, &ultimo, &temp);
                 quitarCamion(&cabezaF, &ultimoF, id);
                 printf("\nSe registro la llegada del Camion con ID: %d\n", ultimo->camion.id);
                 mostrarCamiones(cabeza, "en la base");
@@ -173,9 +173,9 @@ int main()
             switch (opcionE)
             {
             case 0:
-                insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
-                quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
-                printf("\nSe registro la salida del camion con ID: %d\n", ultimoF->camion.id);
+                insertarFinal(&cabezaF, &ultimoF, &cabeza); //Copio el camion que esta adelante
+                quitarCamion(&cabeza, &ultimo, cabeza->id);
+                printf("\nSe registro la salida del camion con ID: %d\n", ultimoF->id);
                 mostrarCamiones(cabeza, "en la base");
                 mostrarCamiones(cabezaF, "fuera de la base");
                 opcionE = 1; //Para no volver al loop
@@ -200,7 +200,7 @@ int main()
         }
         printf("Camion al que se le asignara el paquete del frente de la cola:\n");
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n\n",
-        cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
+        cabeza->id, cabeza->capacidad, cabeza->carga, cabeza->capacidad - cabeza->carga);
         printf("Esta seguro de esta accion?\n");
         do
         {   
@@ -211,7 +211,7 @@ int main()
                 printf("\n");
                 asignarPaquete(cabeza);
                 printf("\n");
-                mostrar(&cabeza->camion.pila);
+                mostrar(&cabeza->pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
                 break;
@@ -243,14 +243,14 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                Nodo *temp = buscarCamion(cabeza, id);
+                Camion *temp = buscarCamion(cabeza, id);
                 if (temp == NULL)
                 {
                     printf("\nCamion no encontrado.\n");
                     printf("Desea buscar otro camion?\n");
                     break;
                 }
-                if (isEmptyPila(&temp->camion.pila) == 1)
+                if (isEmptyPila(&temp->pila) == 1)
                 {
                     printf("\nNo hay paquetes en el camion con ID: %d\n", temp->camion.id);
                     printf("Desea buscar otro camion?\n");
@@ -263,7 +263,7 @@ int main()
                     switch (cantidad)
                     {
                     case 0:
-                        registrarEntrega(&cabezaH, &temp->camion);
+                        registrarEntrega(&cabezaH, &temp);
                         printf("\nEntrega registrada en el historial.\n");
                         cantidad = 1; //Para no volver al loop
                         break;
@@ -298,14 +298,14 @@ int main()
             printf("No hay camiones en la base\n");
             break;
         }
-        if (isEmptyPila(&cabeza->camion.pila) == 1)
+        if (isEmptyPila(&cabeza->pila) == 1)
         {
             printf("No hay paquetes en el camion con ID: %d\n", cabeza->camion.id);
             break;
         }
         printf("Camion al que se le quitara el ultimo paquete:\n");
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
-        cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
+        cabeza->id, cabeza->capacidad, cabeza->ccarga, cabeza->capacidad - cabeza->carga);
         printf("Esta seguro de esta accion?\n");
         do
         {
