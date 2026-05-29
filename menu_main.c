@@ -101,7 +101,7 @@ int main()
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
                 Camion temp = {.id = id, .capacidad = cantidad, .carga = 0, .pila = {.tope = -1}};
-                insertarFinal(&cabeza, &ultimo, &temp);
+                insertarFinal(&cabeza, &ultimo, temp);
                 mostrarCamiones(cabeza, "en la base");
                 mostrarCamiones(cabezaF, "fuera de la base");
                 opcionE = 1; //Para no volver al loop
@@ -141,7 +141,7 @@ int main()
                     printf("Desea buscar otro camion?\n");
                     break;
                 }
-                insertarFinal(&cabeza, &ultimo, &temp);
+                insertarFinal(&cabeza, &ultimo, temp);
                 quitarCamion(&cabezaF, &ultimoF, id);
                 printf("\nSe registro la llegada del Camion con ID: %d\n", ultimo->camion.id);
                 mostrarCamiones(cabeza, "en la base");
@@ -173,7 +173,7 @@ int main()
             switch (opcionE)
             {
             case 0:
-                insertarFinal(&cabezaF, &ultimoF, &cabeza); //Copio el camion que esta adelante
+                insertarFinal(&cabezaF, &ultimoF, cabeza); //Copio el camion que esta adelante
                 quitarCamion(&cabeza, &ultimo, cabeza->id);
                 printf("\nSe registro la salida del camion con ID: %d\n", ultimoF->id);
                 mostrarCamiones(cabeza, "en la base");
@@ -263,7 +263,7 @@ int main()
                     switch (cantidad)
                     {
                     case 0:
-                        registrarEntrega(&cabezaH, &temp);
+                        registrarEntrega(&cabezaH, temp);
                         printf("\nEntrega registrada en el historial.\n");
                         cantidad = 1; //Para no volver al loop
                         break;
