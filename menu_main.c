@@ -7,7 +7,7 @@ int confirmacion();
 int noLetra(const char *letras, int *numero);
 
 //Camiones en la base
-Camiom *cabeza = NULL;
+Camion *cabeza = NULL;
 Camion *ultimo = NULL;
 //Camiones fuera
 Camion *cabezaF = NULL;
