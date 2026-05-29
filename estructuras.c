@@ -142,7 +142,7 @@ void insertarFinal(Camion **cabeza, Camion **ultimo, Camion *camion)
         printf("Error: No se pudo asignar memoria.\n");
         return;
     }
-    nuevo = *camion;
+    *nuevo = *camion;
     
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
