@@ -10,33 +10,27 @@ ID idCamion;
 //Registro ids
 int registrarIdPaquete(int valor)
 {
-    if (buscarIdPaquete(valor) == 1)
-    {
-        printf("ID ya registrado\n");
-        return 1;
-    }
-    idPaquete.id[idPaquete.posicion] = valor;
-    idPaquete.posicion++;
-    return 0;
-}
-
-int buscarIdPaquete(int valor)
-{
     for (int i = 0; i < idPaquete.posicion; i++)
     {
         if (idPaquete.id[i] == valor)
         {
             return 1;
         }
-    }
+    }    
+    idPaquete.id[idPaquete.posicion] = valor;
+    idPaquete.posicion++;
     return 0;
 }
 
-int registrarIdCamion(int valor, Nodo *cabeza)
+
+int registrarIdCamion(int valor)
 {
-    if (buscarCamion(cabeza, valor) != NULL)
+    for (int i = 0; i < idCamion.posicion; i++)
     {
-        return 1;
+        if (idCamion.id[i] == valor)
+        {
+            return 1;
+        }
     }
     idCamion.id[idCamion.posicion] = valor;
     idCamion.posicion++;
@@ -47,10 +41,6 @@ int registrarIdCamion(int valor, Nodo *cabeza)
 int insertarAtras(int id, int peso)
 {
     if (isFullCola() == 1)
-    {
-        return 1;
-    }
-    if (registrarIdPaquete(id) == 1) //Para no repetir
     {
         return 1;
     }
@@ -413,7 +403,7 @@ void mostrar(Pila *pila)
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza, Pila *pila)
+void asignarPaquete(Nodo *cabeza)
 {
     if (isEmptyCola() == 1)
     {
@@ -445,7 +435,7 @@ void asignarPaquete(Nodo *cabeza, Pila *pila)
     cola.paquete[cola.frente].peso, cabeza->camion.capacidad - cabeza->camion.carga); //Las puse asi porque no salieron de la cola
 }
 
-void deshacerAsignacion(Nodo *cabeza, Pila *pila)
+void deshacerAsignacion(Nodo *cabeza)
 {    
     if(cabeza == NULL)
     {

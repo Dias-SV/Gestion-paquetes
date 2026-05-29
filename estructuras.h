@@ -44,8 +44,7 @@ typedef struct Historial{
 
 //Verificacion de ID
 int registrarIdPaquete(int valor);
-int buscarIdPaquete(int valor);
-int registrarIdCamion(int valor, Nodo *cabeza);
+int registrarIdCamion(int valor);
 
 //Cola doble
 int insertarAtras(int id, int peso);
@@ -70,8 +69,8 @@ int isEmptyPila(Pila *pila);
 void mostrar(Pila *pila);
 
 //Asignacion
-void asignarPaquete(Nodo *cabeza, Pila *pila);
-void deshacerAsignacion(Nodo *cabeza, Pila *pila);
+void asignarPaquete(Nodo *cabeza);
+void deshacerAsignacion(Nodo *cabeza);
 
 //Historial
 Nodo* buscarCamion(Nodo *cabeza, int valor);

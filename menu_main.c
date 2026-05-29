@@ -6,7 +6,6 @@
 int confirmacion();
 int noLetra(const char *letras, int *numero);
 
-Pila pila = {.tope = -1}; //Pila de paquetes para meter en camion
 //Camiones en la base
 Nodo *cabeza = NULL;
 Nodo *ultimo = NULL;
@@ -53,10 +52,10 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (buscarIdPaquete(id) == 1)
+                if (registrarIdPaquete(id) == 1)
                 {
                     printf("ID ya registrado\n\n");
-                    printf("Desea continuar con el registro de paquete?\n");
+                    printf("Desea continuar con un ID nuevo para el registro de paquete?\n");
                     break;
                 }
                 while (noLetra("Peso del paquete: ", &cantidad) == 0)//Verifica que no se pongan letras
@@ -90,10 +89,10 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if(registrarIdCamion(id, cabeza) == 1) //Para no repetir
+                if(registrarIdCamion(id) == 1) //Para no repetir
                 {
                     printf("ID ya registrado\n\n");
-                    printf("Desea continuar con el registro de camion?\n");
+                    printf("Desea continuar con un ID nuevo para el registro de camion?\n");
                     break;
                 }
                 while (noLetra("Capacidad de carga en kg: ", &cantidad) == 0)//Verifica que no se pongan letras
@@ -118,14 +117,13 @@ int main()
         break;
 
     case 3: //Registro llegada camion
+        if (cabezaF == NULL)
+        {
+            printf("No hay camiones fuera\n");
+            break;
+        }
         do //Submenu de confirmacion de opcion
         {
-            if (cabezaF == NULL)
-            {
-            printf("No hay camiones fuera\n");
-            opcionE = 1; //Para no volver al loop
-            break;
-            }
             opcionE = confirmacion(); //Se valida el caracter para el proceso
             switch (opcionE)
             {
@@ -146,7 +144,7 @@ int main()
                 opcionE = 1; //Para no volver al loop
                 break;
 
-        case 1:
+            case 1:
                 printf("\nCerrando submenu.\n\n");
                 break;
 
@@ -160,8 +158,7 @@ int main()
     case 4: //Registro salida camion
         if (cabeza == NULL)
         {
-            printf("No hay camiones en la base\n");
-            opcionE = 1; //Para no volver al loop
+            printf("No hay camiones en la base\n");            
             break;
         }
         printf("Se quitara el camion con ID: %d de la base\nEsta seguro? [s/n]: ", cabeza->camion.id);
@@ -203,7 +200,7 @@ int main()
             switch (opcionE)
             {
             case 0:
-                asignarPaquete(cabeza, &pila);
+                asignarPaquete(cabeza);
                 mostrar(&cabeza->camion.pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
@@ -262,7 +259,7 @@ int main()
                         break;
 
                     case 1:
-                        deshacerAsignacion(temp, &pila); //Es el mismo proceso solo que en un camion especifico
+                        deshacerAsignacion(temp); //Es el mismo proceso solo que en un camion especifico
                         printf("\nRegistro de entrega cancelado.\nEl paquete se regreso al frente de la cola.\n\n");
                         break;
 
@@ -282,7 +279,7 @@ int main()
                 printf("Opcion invalida.\n\n");
                 break;
             }
-            } while(opcionE != 1);
+        } while(opcionE != 1);
         break;
     
     case 7: //Deshacer ultima asignacion
@@ -301,7 +298,7 @@ int main()
             switch (opcionE)
             {
             case 0:
-                deshacerAsignacion(cabeza, &pila);
+                deshacerAsignacion(cabeza);
                 opcionE = 1; //Para no volver al loop
                 break;
                 
@@ -313,7 +310,7 @@ int main()
                 printf("Opcion invalida.\n\n");
                 break;
             }
-            } while(opcionE != 1);
+        } while(opcionE != 1);
         break;
 
     case 8:
@@ -359,7 +356,7 @@ int main()
                 printf("Opcion invalida.\n\n");
                 break;
             }
-            } while(opcionE != 1);
+        } while(opcionE != 1);
         break;
         
     case 10:
@@ -382,10 +379,22 @@ int main()
 //Para no equivocarse de opcion
 int confirmacion()
 {
-    char opcionSN[3];
+    char opcionSN[100]; //Para poder guardar mas caracteres en el buffer a limpiar
     printf("Confirmacion [s/n]\n");
-    fgets(opcionSN, sizeof(opcionSN), stdin);
-    opcionSN[strcspn(opcionSN, "\n")] = '\0'; //Quita salto de lines
+    if (fgets(opcionSN, sizeof(opcionSN), stdin) == NULL) //Guarda el input como texto y ve que no este vacio
+    {
+        return -1;
+    }
+    int posicion = strcspn(opcionSN, "\n"); //Busca el salto de linea
+
+    if (opcionSN[posicion] == '\n') //Limpio buffer si se pusieron mas caracteres
+    {
+        int limpiar;
+        while ((limpiar = getchar()) != '\n' && limpiar != EOF);
+    }
+
+    opcionSN[posicion] = '\0'; //Quito salto de linea
+
     if (strcmp(opcionSN, "s") == 0 || strcmp(opcionSN, "S") == 0)
     {
         return 0;
@@ -394,10 +403,7 @@ int confirmacion()
     {
          return 1;
     }
-    else
-    {
-        return -1;//Para que al leer otros caracteres no haya errores
-    }
+    return -1;//Para que al leer otros caracteres no haya errores
 }
 
 int noLetra(const char *letras, int *numero)
