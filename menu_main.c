@@ -173,7 +173,7 @@ int main()
             case 0:
                 insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
                 quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
-                printf("\nSe registro la salida delCamion con ID: %d\n\n", ultimoF->camion.id);
+                printf("\nSe registro la salida del camion con ID: %d\n\n", ultimoF->camion.id);
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -346,6 +346,8 @@ int main()
                 }
                 if (buscarCamion(cabeza, id) == NULL)
                 {
+                    printf("\nCamion no encontrado.\n");
+                    printf("Desea ingresar otro ID?\n");
                     break;
                 }
                 while (noLetra("En que turno lo va a poner: ", &cantidad) == 0)//Verifica que no se pongan letras
