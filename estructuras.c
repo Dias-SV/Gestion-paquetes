@@ -331,7 +331,6 @@ void liberar(Nodo *cabeza, Nodo *ultimo)
         cabeza = cabeza->siguiente;
         free(temp);
     }
-    printf("Memoria liberada correctamente");
 }
 
 //Operaciones pila
@@ -549,5 +548,4 @@ void liberarH(Historial *cabeza)
         cabeza = cabeza->siguiente;
         free(temp);
     }
-    printf("Memoria liberada correctamente");
 }

@@ -54,7 +54,7 @@ int main()
                 }
                 if (registrarIdPaquete(id) == 1)
                 {
-                    printf("ID ya registrado\n\n");
+                    printf("\nID ya registrado\n");
                     printf("Desea continuar con un ID nuevo para el registro de paquete?\n");
                     break;
                 }
@@ -63,6 +63,7 @@ int main()
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
                 insertarAtras(id, cantidad);
+                printf("\n\n");
                 printQueue();
                 opcionE = 1; //Para no volver al loop
                 break;
@@ -91,7 +92,7 @@ int main()
                 }
                 if(registrarIdCamion(id) == 1) //Para no repetir
                 {
-                    printf("ID ya registrado\n\n");
+                    printf("\nID ya registrado\n");
                     printf("Desea continuar con un ID nuevo para el registro de camion?\n");
                     break;
                 }
@@ -101,7 +102,8 @@ int main()
                 }
                 Camion temp = {.id = id, .capacidad = cantidad, .carga = 0, .pila = {.tope = -1}};
                 insertarFinal(&cabeza, &ultimo, &temp);
-                printf("Camion con ID: %d registrado correctamente.\n", id);
+                mostrarCamiones(cabeza, "en la base");
+                mostrarCamiones(cabezaF, "fuera de la base");
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -141,6 +143,7 @@ int main()
                 }
                 insertarFinal(&cabeza, &ultimo, &temp->camion);
                 quitarCamion(&cabezaF, &ultimoF, id);
+                printf("\nSe registro la llegada del Camion con ID: %d\n\n", ultimo->camion.id);
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -161,7 +164,7 @@ int main()
             printf("No hay camiones en la base\n");            
             break;
         }
-        printf("Se quitara el camion con ID: %d de la base\nEsta seguro? [s/n]: ", cabeza->camion.id);
+        printf("Se quitara el camion con ID: %d de la base\nEsta seguro?\n", cabeza->camion.id);
         do
         {
             opcionE = confirmacion();
@@ -170,6 +173,7 @@ int main()
             case 0:
                 insertarFinal(&cabezaF, &ultimoF, &cabeza->camion); //Copio el camion que esta adelante
                 quitarCamion(&cabeza, &ultimo, cabeza->camion.id);
+                printf("\nSe registro la salida delCamion con ID: %d\n\n", ultimoF->camion.id);
                 opcionE = 1; //Para no volver al loop
                 break;
 
@@ -191,7 +195,7 @@ int main()
             break;
         }
         printf("Camion al que se le asignara el paquete del frente de la cola:\n");
-        printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
+        printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n\n",
         cabeza->camion.id, cabeza->camion.capacidad, cabeza->camion.carga, cabeza->camion.capacidad - cabeza->camion.carga);
         printf("Esta seguro de esta accion?\n");
         do
@@ -201,6 +205,7 @@ int main()
             {
             case 0:
                 asignarPaquete(cabeza);
+                printf("\n");
                 mostrar(&cabeza->camion.pila);
                 printQueue();
                 opcionE = 1; //Para no volver al loop
@@ -322,6 +327,11 @@ int main()
         break;
     
     case 9: //Rotar turno
+        if (cabeza == NULL)
+        {
+            printf("No hay camiones en la base\n");
+            break;
+        }
         do
         {
             opcionE = confirmacion();
@@ -387,7 +397,7 @@ int confirmacion()
     }
     int posicion = strcspn(opcionSN, "\n"); //Busca el salto de linea
 
-    if (opcionSN[posicion] == '\n') //Limpio buffer si se pusieron mas caracteres
+    if (opcionSN[posicion] != '\n') //Limpio buffer si se pusieron mas caracteres
     {
         int limpiar;
         while ((limpiar = getchar()) != '\n' && limpiar != EOF);
