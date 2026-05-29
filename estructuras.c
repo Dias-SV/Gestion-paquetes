@@ -4,8 +4,8 @@
 
 Cola cola = {.frente = 0, .final = -1, .size = 0}; //Asi inicalizo la cola
 //Para saber las ids usadas
-ID idPaquete;
-ID idCamion;
+ID idPaquete = {0};
+ID idCamion = {0};
 
 //Registro ids
 int registrarIdPaquete(int valor)
@@ -186,7 +186,7 @@ void rotar(Camion **cabeza, Camion **ultimo, int id, int turno)
     int posicion = 1; //Para saber en que turno esta el camion
     do
     {
-        if(temp->camion.id == id)
+        if(temp->id == id)
         {
             exito = 1;
             break;
@@ -251,12 +251,12 @@ void mostrarCamiones(Camion *cabeza, const char *mensaje)
         return;
     }
     
-    Nodo *temp = cabeza;
+    Camion *temp = cabeza;
     printf("\n----- Camiones %s -----\n", mensaje);
     do
     {
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
-        temp->camion.id, temp->camion.capacidad, temp->camion.carga, temp->camion.capacidad - temp->camion.carga);
+        temp->id, temp->capacidad, temp->carga, temp->capacidad - temp->carga);
 
         temp = temp->siguiente;
     } while (temp != cabeza);
@@ -318,7 +318,7 @@ void quitarCamion(Camion **cabeza, Camion **ultimo, int valor)
 
 void liberar(Camion *cabeza, Camion *ultimo)
 {
-    Nodo *temp;
+    Camion *temp;
     if (cabeza == NULL)//Tuve que poner esto para cuando se quitaron todos los datos
     {
         return;
@@ -416,7 +416,7 @@ void asignarPaquete(Camion *cabeza)
         return;
     }
     
-    if (cabeza->capacidad > cabeza->carga && cola.paquete[cola.frente].peso <= (cabeza->ccapacidad - cabeza->carga))
+    if (cabeza->capacidad > cabeza->carga && cola.paquete[cola.frente].peso <= (cabeza->capacidad - cabeza->carga))
     {
         Paquete paquete = dequeue(); //Saco el paquete de la cola y lo almaceno en la variable local
         if (push(&cabeza->pila, paquete) == 1)
@@ -434,7 +434,7 @@ void asignarPaquete(Camion *cabeza)
     cola.paquete[cola.frente].peso, cabeza->capacidad - cabeza->carga); //Las puse asi porque no salieron de la cola
 }
 
-void deshacerAsignacion(Nodo *cabeza)
+void deshacerAsignacion(Camion *cabeza)
 {    
     if(cabeza == NULL)
     {
@@ -444,7 +444,7 @@ void deshacerAsignacion(Nodo *cabeza)
 
     if(isEmptyPila(&cabeza->pila) == 1)
     {
-        printf("No hay paquetes en el camion con ID: %d\n", cabeza->camion.id);
+        printf("No hay paquetes en el camion con ID: %d\n", cabeza->id);
         return;
     }
 
@@ -459,7 +459,7 @@ void deshacerAsignacion(Nodo *cabeza)
     printf("Asignacion deshecha\n");
 }
 
-Camiom* buscarCamion(Camion *cabeza, int valor)
+Camion* buscarCamion(Camion *cabeza, int valor)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
