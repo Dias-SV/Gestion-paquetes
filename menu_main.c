@@ -18,16 +18,6 @@ Historial *cabezaH = NULL;
 int main()
 {
     int opcionM=0, id=0, cantidad=0, opcionE=0;//Opciones del menu
-    insertarAtras(1, 10);
-    registrarIdPaquete(1);
-    insertarAtras(2, 20);
-    registrarIdPaquete(2);
-    insertarAtras(3, 30);
-    registrarIdPaquete(3);
-
-    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 1, .capacidad = 50, .carga = 0, .pila = {.tope = -1}});
-    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 2, .capacidad = 70, .carga = 0, .pila = {.tope = -1}});
-    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 3, .capacidad = 100, .carga = 0, .pila = {.tope = -1}});
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
