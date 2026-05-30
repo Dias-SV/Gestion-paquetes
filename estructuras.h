@@ -30,12 +30,8 @@ typedef struct Camion{ //Lo puse aqui pooque dependo de pila
     int capacidad;
     int carga;
     Pila pila;
+    struct Camion *siguiente;
 }Camion; 
-
-typedef struct Nodo {
-    Camion camion;
-    struct Nodo *siguiente;
-}Nodo; 
 
 typedef struct Historial{
     Paquete paquete;
@@ -55,11 +51,11 @@ int isEmptyCola();
 void printQueue();
 
 //Lista circular
-void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion);
-void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno);
-void mostrarCamiones(Nodo *cabeza, const char *mensaje);
-void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor);
-void liberar(Nodo *cabeza, Nodo *ultimo);
+void insertarFinal(Camion **cabeza, Camion **ultimo, Camion *camion);
+void rotar(Camion **cabeza, Camion **ultimo, int id, int turno);
+void mostrarCamiones(Camion *cabeza, const char *mensaje);
+void quitarCamion(Camion **cabeza, Camion **ultimo, int valor);
+void liberar(Camion *cabeza, Camion *ultimo);
 
 //Pila
 int push(Pila *pila, Paquete paquete);
@@ -69,11 +65,11 @@ int isEmptyPila(Pila *pila);
 void mostrar(Pila *pila);
 
 //Asignacion
-void asignarPaquete(Nodo *cabeza);
-void deshacerAsignacion(Nodo *cabeza);
+void asignarPaquete(Camion *cabeza);
+void deshacerAsignacion(Camion *cabeza);
 
 //Historial
-Nodo* buscarCamion(Nodo *cabeza, int valor);
+Camion* buscarCamion(Camion *cabeza, int valor);
 void registrarEntrega(Historial **cabeza, Camion *camion);
 void mostrarHistorial(Historial *cabeza);
 void liberarH(Historial *cabeza);

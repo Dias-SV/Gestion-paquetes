@@ -4,12 +4,16 @@
 
 Cola cola = {.frente = 0, .final = -1, .size = 0}; //Asi inicalizo la cola
 //Para saber las ids usadas
-ID idPaquete;
-ID idCamion;
+ID idPaquete = {0};
+ID idCamion = {0};
 
 //Registro ids
 int registrarIdPaquete(int valor)
 {
+    if (idPaquete.posicion >= MAX) 
+    {
+        return 1;
+    }
     for (int i = 0; i < idPaquete.posicion; i++)
     {
         if (idPaquete.id[i] == valor)
@@ -135,14 +139,14 @@ void printQueue()
 }
 
 //Operaciones lista circular
-void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
+void insertarFinal(Camion **cabeza, Camion **ultimo, Camion *camion)
 {
-    Nodo *nuevo = malloc(sizeof(Nodo));
+    Camion *nuevo = malloc(sizeof(Camion));
     if (nuevo == NULL) {
         printf("Error: No se pudo asignar memoria.\n");
         return;
     }
-    nuevo->camion = *camion;
+    *nuevo = *camion; //Creo una copia del camion
     
     if (*cabeza == NULL) //Para el primer valor todos apuntan a lo mismo
     {
@@ -158,7 +162,7 @@ void insertarFinal(Nodo **cabeza, Nodo **ultimo, Camion *camion)
     *ultimo = nuevo;
 }
 
-void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
+void rotar(Camion **cabeza, Camion **ultimo, int id, int turno)
 {
     if (*cabeza == NULL)
     {
@@ -167,7 +171,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     }
 
     int cantidad = 0;
-    Nodo *temp = *cabeza;
+    Camion *temp = *cabeza;
     do //Para saber cuantos camiones hay
     {
         cantidad++;
@@ -181,12 +185,12 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     }
     
     temp = *cabeza; //Reinicio por si las dudas
-    Nodo *antes = *ultimo; //Pongo en ultimo por si se rompe el oop de una
+    Camion *antes = *ultimo; //Pongo en ultimo por si se rompe el oop de una
     int exito = 0;
     int posicion = 1; //Para saber en que turno esta el camion
     do
     {
-        if(temp->camion.id == id)
+        if(temp->id == id)
         {
             exito = 1;
             break;
@@ -231,7 +235,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     }
     else //Para uno en medio
     {
-        Nodo *temp2 = *cabeza; //Para recorrer la nueva lista
+        Camion *temp2 = *cabeza; //Para recorrer la nueva lista
         for (int i = 1; i < turno-1 ; i++)
         {
             temp2 = temp2->siguiente;
@@ -243,7 +247,7 @@ void rotar(Nodo **cabeza, Nodo **ultimo, int id, int turno)
     printf("Camion con ID: %d movido al turno %d\n", id, turno);
 }
 
-void mostrarCamiones(Nodo *cabeza, const char *mensaje)
+void mostrarCamiones(Camion *cabeza, const char *mensaje)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
@@ -251,31 +255,31 @@ void mostrarCamiones(Nodo *cabeza, const char *mensaje)
         return;
     }
     
-    Nodo *temp = cabeza;
+    Camion *temp = cabeza;
     printf("\n----- Camiones %s -----\n", mensaje);
     do
     {
         printf("ID: %d | Capacidad: %dkg | Carga: %dkg | Disponible: %dkg\n",
-        temp->camion.id, temp->camion.capacidad, temp->camion.carga, temp->camion.capacidad - temp->camion.carga);
+        temp->id, temp->capacidad, temp->carga, temp->capacidad - temp->carga);
 
         temp = temp->siguiente;
     } while (temp != cabeza);
     printf("\n");
 }
 
-void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor)
+void quitarCamion(Camion **cabeza, Camion **ultimo, int valor)
 {
     if(*cabeza == NULL)
     {
         printf("No hay camiones\n");
         return;
     }
-    Nodo *temp = *cabeza;
-    Nodo *antes = *ultimo;
+    Camion *temp = *cabeza;
+    Camion *antes = *ultimo;
     int exito = 0;
     do
     {
-        if(temp->camion.id == valor)
+        if(temp->id == valor)
         {
             exito = 1;
             break;
@@ -316,9 +320,9 @@ void quitarCamion(Nodo **cabeza, Nodo **ultimo, int valor)
     free(temp);
 }
 
-void liberar(Nodo *cabeza, Nodo *ultimo)
+void liberar(Camion *cabeza, Camion *ultimo)
 {
-    Nodo *temp;
+    Camion *temp;
     if (cabeza == NULL)//Tuve que poner esto para cuando se quitaron todos los datos
     {
         return;
@@ -402,7 +406,7 @@ void mostrar(Pila *pila)
 }
 
 //Asignar paquetes
-void asignarPaquete(Nodo *cabeza)
+void asignarPaquete(Camion *cabeza)
 {
     if (isEmptyCola() == 1)
     {
@@ -416,25 +420,25 @@ void asignarPaquete(Nodo *cabeza)
         return;
     }
     
-    if (cabeza->camion.capacidad > cabeza->camion.carga && cola.paquete[cola.frente].peso <= (cabeza->camion.capacidad - cabeza->camion.carga))
+    if (cabeza->capacidad > cabeza->carga && cola.paquete[cola.frente].peso <= (cabeza->capacidad - cabeza->carga))
     {
         Paquete paquete = dequeue(); //Saco el paquete de la cola y lo almaceno en la variable local
-        if (push(&cabeza->camion.pila, paquete) == 1)
+        if (push(&cabeza->pila, paquete) == 1)
         {
             insertarAdelante(paquete.id, paquete.peso); //Si no se pudo agregar a la pila lo regreso a la cola
             return;
         }
-        cabeza->camion.carga = paquete.peso + cabeza->camion.carga; 
-        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", paquete.id, cabeza->camion.id);
+        cabeza->carga = paquete.peso + cabeza->carga; 
+        printf("Paquete con ID: %d se agrego al camion con ID: %d\n", paquete.id, cabeza->id);
         return;
     }
     
     printf("Paquete con ID: %d NO se agrego al camion con ID: %d porque excede el peso.\nPeso paquete: %dkg. Espacio restante en el camion %d.\n"
-    , cola.paquete[cola.frente].id, cabeza->camion.id, 
-    cola.paquete[cola.frente].peso, cabeza->camion.capacidad - cabeza->camion.carga); //Las puse asi porque no salieron de la cola
+    , cola.paquete[cola.frente].id, cabeza->id, 
+    cola.paquete[cola.frente].peso, cabeza->capacidad - cabeza->carga); //Las puse asi porque no salieron de la cola
 }
 
-void deshacerAsignacion(Nodo *cabeza)
+void deshacerAsignacion(Camion *cabeza)
 {    
     if(cabeza == NULL)
     {
@@ -442,34 +446,34 @@ void deshacerAsignacion(Nodo *cabeza)
         return;
     }
 
-    if(isEmptyPila(&cabeza->camion.pila) == 1)
+    if(isEmptyPila(&cabeza->pila) == 1)
     {
-        printf("No hay paquetes en el camion con ID: %d\n", cabeza->camion.id);
+        printf("No hay paquetes en el camion con ID: %d\n", cabeza->id);
         return;
     }
 
-    Paquete paquete = pop(&cabeza->camion.pila);
+    Paquete paquete = pop(&cabeza->pila);
     if (paquete.id == -1) //otro chequeo por si las dudas
     {
         printf("No se pudo quitar el paquete\n");
         return;
     }
     insertarAdelante(paquete.id, paquete.peso); //Lo regreso a la cola para no perder el paquete
-    cabeza->camion.carga = cabeza->camion.carga - paquete.peso;
+    cabeza->carga = cabeza->carga - paquete.peso;
     printf("Asignacion deshecha\n");
 }
 
-Nodo* buscarCamion(Nodo *cabeza, int valor)
+Camion* buscarCamion(Camion *cabeza, int valor)
 {
     if (cabeza == NULL) //Sin esto crashea
     {
         return NULL;
     }
     
-    Nodo *temp = cabeza;
+    Camion *temp = cabeza;
     do
     {
-        if(temp->camion.id == valor)
+        if(temp->id == valor)
         {
             return temp;
         }
