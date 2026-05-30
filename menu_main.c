@@ -18,6 +18,16 @@ Historial *cabezaH = NULL;
 int main()
 {
     int opcionM=0, id=0, cantidad=0, opcionE=0;//Opciones del menu
+    insertarAtras(1, 10);
+    registrarIdPaquete(1);
+    insertarAtras(2, 20);
+    registrarIdPaquete(2);
+    insertarAtras(3, 30);
+    registrarIdPaquete(3);
+
+    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 1, .capacidad = 50, .carga = 0, .pila = {.tope = -1}});
+    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 2, .capacidad = 70, .carga = 0, .pila = {.tope = -1}});
+    insertarFinal(&cabeza, &ultimo, &(Camion){.id = 3, .capacidad = 100, .carga = 0, .pila = {.tope = -1}});
 
     printf("\n-----Gestor de paqueteria-----\n\n");
     do
@@ -52,7 +62,7 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if (registrarIdPaquete(id) == 1)
+                if (registrarIdPaquete(id) == 1) //Verifica que no se repitan los ID
                 {
                     printf("\nID ya registrado\n");
                     printf("Desea continuar con un ID nuevo para el registro de paquete?\n");
@@ -62,7 +72,10 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                insertarAtras(id, cantidad);
+                if (insertarAtras(id, cantidad) == 1) //Verifica la cola no este llena
+                {
+                    printf("\nNo se pudo registrar el paquete. La cola esta llena.");
+                }
                 printf("\n\n");
                 printQueue();
                 opcionE = 1; //Para no volver al loop
@@ -90,7 +103,7 @@ int main()
                 {
                     printf("Entrada invalida. Ingresa un numero entero mayor que 1.\n\n");
                 }
-                if(registrarIdCamion(id) == 1) //Para no repetir
+                if(registrarIdCamion(id) == 1) //Para no repetir ID
                 {
                     printf("\nID ya registrado\n");
                     printf("Desea continuar con un ID nuevo para el registro de camion?\n");
@@ -209,7 +222,7 @@ int main()
             {
             case 0:
                 printf("\n");
-                asignarPaquete(cabeza);
+                asignarPaquete(cabeza); //Pongo el paquete en el camion que esta adelante
                 printf("\n");
                 mostrar(&cabeza->pila);
                 printQueue();
@@ -263,7 +276,7 @@ int main()
                     switch (cantidad)
                     {
                     case 0:
-                        registrarEntrega(&cabezaH, temp);
+                        registrarEntrega(&cabezaH, temp); //Saco paquete de la pila y lo guardo
                         printf("\nEntrega registrada en el historial.\n");
                         cantidad = 1; //Para no volver al loop
                         break;
@@ -314,7 +327,7 @@ int main()
             {
             case 0:
                 printf("\n");
-                deshacerAsignacion(cabeza);
+                deshacerAsignacion(cabeza); //Saca el paquete del camion y lo regresa a la cola
                 opcionE = 1; //Para no volver al loop
                 break;
                 

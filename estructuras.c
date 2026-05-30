@@ -68,9 +68,8 @@ int insertarAdelante(int id, int peso)
     {
         return 1;
     }
-    //No pongo verificacion de ID porque solo pondra los paquetes que se quitaron de un camion
 
-    if (isEmptyCola() == 1) //Resetea posiciones y al estar en 0 no se guarda el elemento en 4 si no en 0
+    if (isEmptyCola() == 1) //Resetea posiciones
     {
         cola.frente = 0;
         cola.final = 0; //Para que no apunte a -1
@@ -105,7 +104,6 @@ int isFullCola()
 {
     if (cola.size == MAX)
     {
-        printf("\nLa cola esta llena\n");
         return 1;
     }
     return 0;
@@ -320,6 +318,26 @@ void quitarCamion(Camion **cabeza, Camion **ultimo, int valor)
     free(temp);
 }
 
+Camion* buscarCamion(Camion *cabeza, int valor)
+{
+    if (cabeza == NULL) //Sin esto crashea
+    {
+        return NULL;
+    }
+    
+    Camion *temp = cabeza;
+    do
+    {
+        if(temp->id == valor)
+        {
+            return temp;
+        }
+        temp = temp->siguiente;
+    } while (temp != cabeza);
+    return NULL; //Si no encuentra
+
+}
+
 void liberar(Camion *cabeza, Camion *ultimo)
 {
     Camion *temp;
@@ -452,35 +470,20 @@ void deshacerAsignacion(Camion *cabeza)
         return;
     }
 
-    Paquete paquete = pop(&cabeza->pila);
+    Paquete paquete = pop(&cabeza->pila); //Saco paquete de la pila
     if (paquete.id == -1) //otro chequeo por si las dudas
     {
         printf("No se pudo quitar el paquete\n");
         return;
     }
-    insertarAdelante(paquete.id, paquete.peso); //Lo regreso a la cola para no perder el paquete
+    if (insertarAdelante(paquete.id, paquete.peso) == 1) //Devuelve paquete despues de quitarlo de la pila
+    {
+        printf("No se pudo quitar el paquete\n");
+        return;
+    }
     cabeza->carga = cabeza->carga - paquete.peso;
     printf("Asignacion deshecha\n");
-}
-
-Camion* buscarCamion(Camion *cabeza, int valor)
-{
-    if (cabeza == NULL) //Sin esto crashea
-    {
-        return NULL;
-    }
-    
-    Camion *temp = cabeza;
-    do
-    {
-        if(temp->id == valor)
-        {
-            return temp;
-        }
-        temp = temp->siguiente;
-    } while (temp != cabeza);
-    return NULL; //Si no encuentra
-
+    return;
 }
 
 //Historial

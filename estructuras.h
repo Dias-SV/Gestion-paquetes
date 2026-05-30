@@ -55,6 +55,7 @@ void insertarFinal(Camion **cabeza, Camion **ultimo, Camion *camion);
 void rotar(Camion **cabeza, Camion **ultimo, int id, int turno);
 void mostrarCamiones(Camion *cabeza, const char *mensaje);
 void quitarCamion(Camion **cabeza, Camion **ultimo, int valor);
+Camion* buscarCamion(Camion *cabeza, int valor);
 void liberar(Camion *cabeza, Camion *ultimo);
 
 //Pila
@@ -69,7 +70,6 @@ void asignarPaquete(Camion *cabeza);
 void deshacerAsignacion(Camion *cabeza);
 
 //Historial
-Camion* buscarCamion(Camion *cabeza, int valor);
 void registrarEntrega(Historial **cabeza, Camion *camion);
 void mostrarHistorial(Historial *cabeza);
 void liberarH(Historial *cabeza);
